@@ -5,6 +5,6 @@ Rich was here
 Rich is rich
 
  ## Collaborators
- DAVID
- Rich
- Peter
+ - DAVID
+ - Rich
+ - Peter
