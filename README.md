@@ -4,5 +4,7 @@ David agress!
 Rich was here
 Rich is rich
 
-#Collaborators
-- Peter
+ ## Collaborators
+ DAVID
+ Rich
+ Peter
