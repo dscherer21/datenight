@@ -1,3 +1,9 @@
 # datenight
 Peter is a loser
-Rich was here
+
+
+##Colaborators
+- Rich
+- Dave
+- Peter
+
