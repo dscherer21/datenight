@@ -48,3 +48,7 @@ form {
 hr {
     opacity: 0;
 }
+ 
+.copyright {
+    font-family: 'Lobster', cursive;
+}
