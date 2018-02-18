@@ -1,0 +1,54 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url('../images/datenightbackground.jpg');
+    background-repeat: no-repeat;
+    font-family: 'Amatic SC', cursive;
+    color: white;
+}
+
+header {
+    background-color: rgba(66, 1, 13, 1);
+    background-size: cover;
+    box-shadow: 12px 12px 12px 1px rgba(255,255,255,.2);
+}
+
+h1 {
+    font-family: 'Lobster', cursive;
+    font-size: 62px;
+}
+
+label {
+    font-size: 22px;
+}
+
+form {
+    margin: 20px;
+}
+
+.img-thumbnail {
+    background-color: rgba(66, 1, 13, 1);
+    margin: 5px;
+}
+
+.carousel-item {
+    background-color: white;
+    color: black;
+    padding: 5px;
+}
+
+.navbar-fixed-bottom {
+	background-color: rgba(66, 1, 13, 1);
+	color: rgba(255,255,255,.7);
+	padding: 20px;
+}
+
+hr {
+    opacity: 0;
+}
+ 
+.copyright {
+    font-family: 'Lobster', cursive;
+}
