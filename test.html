@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="eng-us">
+
+<!--  test.html to test the API for showtimes
+
+
+-->
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Date Night</title>
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  -->
+
+    <!-- load in a reset of CSS  -->
+    <!-- *RPB  redo the styles after loading in the rest.css  -->
+    <!-- <link rel="stylesheet" type="text/css" href="assets/css/reset.css">   -->
+    <!-- load my style sheet -->
+    <!-- JQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!--
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  -->
+
+    <!-- Bootstrap CDN-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="assets/javascript/moment.js"></script>
+    <script src="assets/javascript/numeral.js"></script>
+
+</head>
+
+<body>
+    <div>
+        <hr>
+    </div>
+    <div>
+        <hr>
+    </div>
+    <div id="inputSect">
+        <!--        <form id="user-form">   -->
+        <label for="number-input">Latitude</label>
+        <input type="number" id="input-lat">
+        <p></p>
+        <label for="number-input">Longitude</label>
+        <input type="number" id="input-lon">
+        <p></p>
+        <label for="number-input">Distance</label>
+        <input type="number" id="input-dist">
+        <p></p>
+        <!-- Button triggers new movie to be added -->
+        <input id="bttnUserInput" type="submit" value="Submit">
+        <!--        </form>   -->
+    </div>
+    <div>
+        <hr>
+    </div>
+    <div class="container-fluid">
+        <div id="movieOutput"></div>
+    </div>
+
+    <script>
+        var dataSrch = "";
+        var dataSrchDone = false;
+        var dataTheaterSearch;
+
+        var theaterRecType = {  //this is record type coming from iShowTimes
+            auditorium: "",
+            booking_type: "",
+            cinema_id: "",
+            is_3d: false,
+            movie_id: "",
+            start_at: "",      //time to start 
+            EOR: ""            //place marker
+        };
+
+        var theaterObj = {   //main object for the whole theater
+            currTheater: {
+                theaterRec: theaterRecType,      //the current theater with movie
+                theaterName: "",   //actual name of the theater
+                address: {
+                    dispText: "",
+                    houseNum: "",
+                    street: "",
+                    city: "",
+                    state: "",
+                    zipCode: "",
+                    geoLocLat: 0,
+                    geoLocLong: 0
+                },
+                url: "",
+                telephone: "",
+                movie: {
+                    title: "",
+                    rating: "",
+                    runtime: "",
+                    imdb_id: "", // incase want to search other web sites
+                    thumbImgUrl: "",    //thumbnail sized image files
+                    genres: []
+                },
+                EOR: ""    //place keeper, no comma needed
+            },
+
+            searchParam: {
+                //everything that stays fixed for search parameters
+                urlPart1: "https://api.internationalshowtimes.com/v4/",
+                qryCinemas: "cinemas/",
+                qryMovies: "movies/",
+                urlShowTimes: "showtimes/",    //for showtimes
+                qryTimeFrom: "&time_from=",
+                qryTimeTo: "&time_to=",
+                urlLimit: "&limit=1",          //when searching for one item
+                urlQryKey: "?apikey=xeeFzVhhznvw4MuwL9eZOxR0QhEdUZQW",  //API key
+                urlCountry: "&countries=US",   //country
+                urlBoundGeo: "&bounds=(42.056552,-87.707449),(42.040462,-87.670348)",  //geoposition bounds
+                qryGeoLocation: "&location=",  //then put in lat,lon with comma between them
+                qryDistance: "&distance=",     //in kilometers
+                EOR: ""
+            },
+
+            //variables are here
+            theaterStack: [],      //array of theaters  --- treat as stack
+            numSearchConv: 0,      //storage for the loop going thru the conversion
+            searchLat: "",
+            searchLon: "",
+            searchDist: "",  //in kilometers
+
+            buildSearchStr: function (typeSearch, indexNum) {
+                var timeFromStr = "2018-02-18T00:00:00-08:00";
+                var timeToStr = "2018-02-19T00:00:00-08:00";
+                var outString = "";
+                var SP = this.searchParam;
+                if (typeSearch == 1) {
+                    outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.qryGeoLocation + theaterObj.searchLat + "," + theaterObj.searchLon + SP.qryDistance + theaterObj.searchDist;
+                    //outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.urlCountry + SP.urlBoundGeo;
+                    outString += SP.qryTimeFrom + timeFromStr + SP.qryTimeTo + timeToStr;
+                    console.log(outString);
+                };
+                if (typeSearch == 2) {
+                    var cinemaID = theaterObj.theaterStack[indexNum].theaterRec.cinema_id;
+                    outString = SP.urlPart1 + SP.qryCinemas + cinemaID + SP.urlQryKey;
+                    console.log(outString);
+                };
+                if (typeSearch == 3) {
+                    var movieID = theaterObj.theaterStack[indexNum].theaterRec.movie_id;
+                    if (movieID === "" || movieID === null) {
+                        //null movieID
+                        outString = "";
+                    } else {
+                        outString = SP.urlPart1 + SP.qryMovies + movieID + SP.urlQryKey + SP.urlLimit;
+                    }
+                    console.log(outString);
+                };
+
+                return outString;
+            },
+
+            doSearch: function (typeSearch, indexNum) {
+                //function to do current search
+                //return the response    
+                dataSrchDone = false;
+                var shouldSearch = true;
+                //stop from multiple searches
+                if (typeSearch == 2 && indexNum > 0) {
+                    //check if should search
+                    var cinemaID = theaterObj.theaterStack[indexNum].theaterRec.cinema_id;
+                    if (cinemaID === dataTheaterSearch.cinema.id) {
+                        //it is the same as previous search, so don't search
+                        shouldSearch = false;
+                    };
+                };
+                if (typeSearch == 3 && indexNum > 0) {
+                    console.log(indexNum);
+                    //check if should search
+                    var movieID = theaterObj.theaterStack[indexNum].theaterRec.movie_id;
+                    if (movieID === dataTheaterSearch.movie.id) {
+                        //it is the same as previous search, so don't search
+                        shouldSearch = false;
+                    };
+                };
+                var urlString = this.buildSearchStr(typeSearch, indexNum);
+                //check if it is a null string, if so, then need to take care of
+                if (urlString === "") { shouldSearch = false; };
+                if (shouldSearch) {
+                    jQuery.ajax({
+                        url: urlString,
+                        type: "GET"
+                    })
+                        .done(function (dataSrch, textStatus, jqXHR) {
+                            console.log("HTTP Request Succeeded: " + jqXHR.status);
+                            console.log(dataSrch);
+                            dataTheaterSearch = jQuery.extend(true, {}, dataSrch);
+                            dataSrchDone = true;
+                            theaterObj.doSearchDone(typeSearch, indexNum);
+                            //return dataTheaterSearch;
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                            console.log("HTTP Request Failed");
+                        })
+                        .always(function () {
+                            /* ... */
+                        });
+                } else {
+                    //mimic a search was finished
+                    theaterObj.doSearchDone(typeSearch, indexNum);
+                };
+            },
+
+            doSearchDone: function (typeSearch, indexNum) {
+                if (typeSearch == 1) {
+                    //part one of search is done
+                    theaterObj.theaterResponseToStack(dataTheaterSearch);
+                    //now need to search for cinema ID for all items found
+                    theaterObj.numSearchConv = 0;
+                    theaterObj.doSearch(2, theaterObj.numSearchConv)
+                };
+                if (typeSearch == 2) {
+                    //part one of search is done, now need movie theater names
+                    var stackPos = theaterObj.theaterStack[theaterObj.numSearchConv];
+                    stackPos.theaterName = dataTheaterSearch.cinema.name;
+                    stackPos.address.geoLocLat = dataTheaterSearch.cinema.location.lat;
+                    stackPos.address.geoLocLong = dataTheaterSearch.cinema.location.lon;
+                    stackPos.address.dispText = dataTheaterSearch.cinema.location.address.display_text;
+                    stackPos.address.houseNum = dataTheaterSearch.cinema.location.address.house;
+                    stackPos.address.street = dataTheaterSearch.cinema.location.address.street;
+                    stackPos.address.city = dataTheaterSearch.cinema.location.address.city;
+                    stackPos.address.state = dataTheaterSearch.cinema.location.address.state_abbr;
+                    stackPos.address.zipCode = dataTheaterSearch.cinema.location.address.zipcode;
+                    stackPos.url = dataTheaterSearch.cinema.website;
+                    stackPos.telephone = dataTheaterSearch.cinema.telephone;
+
+                    theaterObj.numSearchConv++; //go to the next one
+                    if (theaterObj.numSearchConv < theaterObj.theaterStack.length) {
+                        //do another search
+                        theaterObj.doSearch(2, theaterObj.numSearchConv);
+                    } else {
+                        theaterObj.numSearchConv = 0;
+                        theaterObj.doSearch(3, theaterObj.numSearchConv);
+                    };
+                };
+                if (typeSearch == 3) {
+                    //searching on movie names
+                    var stackPos = theaterObj.theaterStack[theaterObj.numSearchConv].movie;
+                    stackPos.title = dataTheaterSearch.movie.original_title;
+                    if (dataTheaterSearch.movie.age_limits != null) {
+                        stackPos.rating = dataTheaterSearch.movie.age_limits.US;
+                    } else {
+                        stackPos.rating = "none";
+                    };
+                    stackPos.runtime = dataTheaterSearch.movie.runtime;
+                    stackPos.imdb_id = dataTheaterSearch.movie.imdb_id;
+                    stackPos.thumbImgUrl = dataTheaterSearch.movie.poster_image.image_files[0].url;
+                    var endVal = dataTheaterSearch.movie.genres.length;
+                    for (var i = 0; i < endVal; i++) {
+                        //loop thru and add in all the genres for the film
+                        stackPos.genres.push(dataTheaterSearch.movie.genres[i].name);
+                    };
+
+                    theaterObj.numSearchConv++; //go to the next one
+                    if (theaterObj.numSearchConv < theaterObj.theaterStack.length) {
+                        //do another search
+                        theaterObj.doSearch(3, theaterObj.numSearchConv);
+                    } else {
+                        outputMovies();
+                    };
+                };
+            },
+
+            clearStack: function () {
+                //clears all the current values in the array
+                var endVal = theaterObj.theaterStack.length;
+                for (var i = 0; i < endVal; i++) {
+                    theaterObj.theaterStack.pop();
+                };
+            },
+
+            pushToStack: function () {
+                //takes the currTheater and treats as record and pushes to stack array
+                //have to make a copy of an object before pushing it anywhere
+                var newObj = jQuery.extend(true, {}, theaterObj.currTheater);
+                theaterObj.theaterStack.push(newObj);    //object is now on the stack
+            },
+
+            theaterResponseToStack: function (responseIn) {
+                //pass the response in, just in case doing external to object
+                //this is parsing for iShowTimes
+                //stack is NOT CLEARED prior to entering
+                var stArray = responseIn.showtimes;  //showtimes array shortcut
+                console.log("stArray");
+                console.log(stArray);
+
+                var currTheaterRec = theaterObj.currTheater.theaterRec; //shortcut
+                var endVal = stArray.length;
+                for (var i = 0; i < endVal; i++) {
+                    //transfer the theater response to the currRec variable
+                    currTheaterRec.auditorium = stArray[i].auditorium;
+                    currTheaterRec.booking_type = stArray[i].booking_type;
+                    currTheaterRec.cinema_id = stArray[i].cinema_id;
+                    currTheaterRec.is_3d = stArray[i].is_3d;
+                    currTheaterRec.movie_id = stArray[i].movie_id;
+                    currTheaterRec.start_at = stArray[i].start_at;
+                    theaterObj.pushToStack();  //make permanent
+                };
+
+                console.log(endVal);
+            },
+
+            EOR: ""    //place keeper so don't have to worry about stupid commas
+        };
+
+        var testSearch = function () {
+            theaterObj.clearStack();
+            theaterObj.doSearch(1, 0);
+            console.log("data search done = " + dataSrchDone);
+
+            var continF = true;
+
+            //wait for the data to come bacl
+            //    if( dataSrchDone == true ) { continF = false; };
+            //} while (continF );
+            //console.log(  dataTheaterSearch );
+
+            /*
+            setTimeout( function(){
+                console.log("done = " + dataSrchDone );
+                console.log(searchResult);
+                //theaterObj.theaterResponseToStack(searchResult);
+            } , 5000 );
+            */
+
+            //   do {
+            console.log("waiting for a return");
+            //      } while ( searchResult===undefined );
+        };
+
+
+        var outputMovies = function () {
+            //outputs search to movies
+            var divOutput = $("#movieOutput");
+            divOutput.html("");
+            var numFound = theaterObj.theaterStack.length;
+            for (var i = 0; i < numFound; i++) {
+                //loop thru the entire stack
+                var stackPtr = theaterObj.theaterStack[i];
+                var newRow = $("<div>");
+                $(newRow).addClass("row");
+                var movieStr = stackPtr.movie.title;
+                var rating = stackPtr.movie.rating;
+                var theaterName = stackPtr.theaterName;
+                var theaterStreet = stackPtr.address.street;
+                var theaterCity = stackPtr.address.city;
+                var theaterState = stackPtr.address.state;
+                var startTime = moment(stackPtr.theaterRec.start_at).format("h:mm a");
+                var runTime = stackPtr.movie.runtime + " min";
+                var stopTime = moment(stackPtr.theaterRec.start_at).add(stackPtr.movie.runtime, "minutes").format("h:mm a");
+
+                var H2tag = $("<h3>");
+                var line1str = movieStr;
+                var newPtag = $("<p>");
+
+                $(H2tag).text(line1str);
+                var H3tag = $("<h4>");
+                $(H3tag).text(" " + startTime + " " + "run=" + runTime + " ends = " + stopTime);
+                $(H2tag).appendTo(newPtag);
+                $(H3tag).appendTo(newPtag);
+                $(newPtag).appendTo(newRow);
+
+                var line2str = theaterName
+                    + " " + theaterCity + "," + theaterState;
+                newPtag = $("<p>");
+                newPtag.text(line2str);
+                $(newPtag).appendTo(newRow);
+                $(newRow).appendTo(divOutput);
+
+                var line3str = theaterStreet + " " + theaterCity + ", " + theaterState;
+                newPtag = $("<p>");
+                newPtag.text(line3str);
+                $(newPtag).appendTo(newRow);
+                $(newRow).appendTo(divOutput);
+
+                //now the location file
+                var line4str = "lat=" + stackPtr.address.geoLocLat + " lon=" + stackPtr.address.geoLocLong;
+                newPtag = $("<p>");
+                newPtag.text(line4str);
+                $(newPtag).appendTo(newRow);
+                $(newRow).appendTo(divOutput);
+
+                var urlMovieThumb = stackPtr.movie.thumbImgUrl;
+                var imgTag = $("<img>");
+                $(imgTag).attr("src", urlMovieThumb)
+                $(imgTag).appendTo(newRow);
+
+                newPtag = $("<p>");
+                HRtag = $("<hr>");
+                $(HRtag).appendTo(newPtag);
+                $(newPtag).appendTo(newRow);
+                $(newRow).appendTo(divOutput);
+            };
+        };
+    
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        };
+
+        function showPosition(position) {
+            $( "#input-lat" ).val( numeral( position.coords.latitude ).format("0000.000000") );
+            $( "#input-lon" ).val( numeral( position.coords.longitude ).format("0000.000000") );
+            $( "#input-dist" ).val( numeral( 5 ).format("0.0") );
+        };
+
+
+        getLocation();
+
+        $("#bttnUserInput").on("click", function (event) {
+            //submit button was pushed
+            console.log("submit clicked");
+            event.preventDefault();
+            theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
+            theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
+            var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
+            theaterObj.searchDist = numeral(distInKM).format("+0000.0000");
+
+            if (theaterObj.searchLat === "+0000.000000" || theaterObj.searchLon === "+0000.000000") {
+                //left blank, so put in Evanston as default
+                theaterObj.searchLat = numeral(42.048995).format("+0000.000000");
+                theaterObj.searchLon = numeral(-87.684505).format("+0000.000000");
+                theaterObj.searchDist = numeral(6.00).format("+0000.0000");
+            }
+            testSearch();
+        });
+
+    </script>
+
+</body>
+
+</html>
