@@ -56,3 +56,7 @@ hr {
 .specialFont {
   font-family: 'Lobster', cursive;
 }
+
+.panel-body {
+    color: black;
+}
