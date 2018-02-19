@@ -103,7 +103,20 @@ hr {
 }
 
 #navIcon {
-    width: 115px;
+   
+}
+
+h3 {
+    margin-left: 10px;
+}
+
+/*Adding styles to fix header overlap on smaller screens*/
+@media screen and (max-width: 530px) {
+
+    h1 {
+        font-size: 42px;
+    }
+    
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
