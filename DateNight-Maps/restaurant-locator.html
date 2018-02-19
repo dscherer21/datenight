@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Restaurant Locator</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+
+        #map {
+            height: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+
+        var configData = {
+            theaterSearchDist: 2 * 1609.34,
+            restaurantSearchDist: 2 * 1609.34
+        }
+
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+        var map;
+        var infowindow;
+
+        function initMap(testTheater) {
+            //Using Coordinates for Music Box Theater
+            //This would be coordinates of theater pulled in from user selection
+            var testTheater = { lat: 41.9622, lng: -87.8095 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: testTheater,
+                zoom: 16
+            });
+
+            infowindow = new google.maps.InfoWindow();
+            var service = new google.maps.places.PlacesService(map);
+            service.nearbySearch({
+                location: testTheater,
+                radius: configData.restaurantSearchDist,
+                type: ['restaurant'],
+                rankBy: google.maps.places.RankBy.PROMINENCE
+            }, callback);
+        }
+
+        function callback(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                for (var i = 0; i < results.length; i++) {
+                    createMarker(results[i]);
+                }
+            }
+        }
+
+        function createMarker(place) {
+            var placeLoc = place.geometry.location;
+            var marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location
+            });
+
+
+            google.maps.event.addListener(marker, 'click', function () {
+                console.log(place);
+
+                // // Example queryURL for Google Place Details API
+                // var queryURL = "https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJW7xCCs7LD4gReyed0Lr_LaM&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+                // // var queryURL = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + this.place_id + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+
+                // $.ajax({
+                //     url: queryURL,
+                //     type: 'GET'
+                // })
+                // .then(function (response) {
+                //     console.log(response);
+                // });
+
+
+                infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + '<p><strong>Address: </strong>' + place.vicinity + '</p>' + '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</div>');
+                infowindow.open(map, this);
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&libraries=places&callback=initMap"
+        async defer></script>
+</body>
+
+</html>
