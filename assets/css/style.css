@@ -3,10 +3,12 @@
 }
 
 body {
-    background-image: url('../images/datenightbackground.jpg');
+    background-image: url('../images/background.jpg');
     background-repeat: no-repeat;
-    font-family: 'Amatic SC', cursive;
-    color: white;
+    font-family: 'Courgette', cursive;
+    /*color: rgba(255, 89, 89, 1);*/
+    color: beige;
+    font-size: 28px;
 }
 
 header {
@@ -31,6 +33,8 @@ form {
 .img-thumbnail {
     background-color: rgba(66, 1, 13, 1);
     margin: 5px;
+    max-width: none;
+    width: 82px;
 }
 
 .carousel-item {
@@ -48,7 +52,7 @@ form {
 hr {
     opacity: 0;
 }
- 
-.copyright {
-    font-family: 'Lobster', cursive;
+
+.specialFont {
+  font-family: 'Lobster', cursive;
 }
