@@ -94,7 +94,9 @@
             imdb_id: "", // incase want to search other web sites
             thumbImgUrl: "",    //thumbnail sized image files
             genres: [],
-            movie_id: ""
+            movie_id: "",
+            urlWebsite : "",
+            urlTrailer : ""
         };
 
 
@@ -304,12 +306,23 @@
             doMovieSearchDone: function (indexNum) {
                 //searching on movie names
                 var mRec = theaterObj.currMovieRec;
-                mRec.title = dataTheaterSearch.movie.original_title;
+                if (dataTheaterSearch.movie.title==null || dataTheaterSearch.movie.title==="" ){
+                    //title is blank, then user original title
+                    mRec.title = dataTheaterSearch.movie.original_title;
+                } else {
+                    mRec.title = dataTheaterSearch.movie.title;
+                };
                 if (dataTheaterSearch.movie.age_limits != null) {
                     mRec.rating = dataTheaterSearch.movie.age_limits.US;
                 } else {
                     mRec.rating = "none";
                 };
+                mRec.urlWebsite = dataTheaterSearch.movie.website;
+                //now only move the trailer if it exists
+                if( dataTheaterSearch.movie.trailers.length >=0 ) {
+                    
+                }
+                //mRec.urlTrailer = dataTheaterSearch.trailers[0].trailer_files[0].url;
                 mRec.runtime = dataTheaterSearch.movie.runtime;
                 mRec.imdb_id = dataTheaterSearch.movie.imdb_id;
                 mRec.thumbImgUrl = dataTheaterSearch.movie.poster_image.image_files[0].url;
