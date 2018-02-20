@@ -61,6 +61,17 @@
     </div>
 
     <script>
+        var configData = {
+            theaterSearchDist: 2, //2 miles search earea
+            restaurantSearchDist: 2, //2 miles
+
+        };
+
+
+
+        configData.restaurantSearchDist
+
+
         var dataSrch = "";
         var dataSrchDone = false;
         var dataTheaterSearch;
@@ -75,6 +86,18 @@
             EOR: ""            //place marker
         };
 
+
+        var movieRecType = {
+            title: "",
+            rating: "",
+            runtime: "",
+            imdb_id: "", // incase want to search other web sites
+            thumbImgUrl: "",    //thumbnail sized image files
+            genres: [],
+            movie_id: ""
+        };
+
+
         var theaterObj = {   //main object for the whole theater
             currTheater: {
                 theaterRec: theaterRecType,      //the current theater with movie
@@ -87,7 +110,8 @@
                     state: "",
                     zipCode: "",
                     geoLocLat: 0,
-                    geoLocLong: 0
+                    geoLocLong: 0,
+                    distToCenter: 0
                 },
                 url: "",
                 telephone: "",
@@ -95,12 +119,14 @@
                     title: "",
                     rating: "",
                     runtime: "",
-                    imdb_id: "", // incase want to search other web sites
+                    imdb_id: "", // in case want to search other web sites
                     thumbImgUrl: "",    //thumbnail sized image files
                     genres: []
                 },
                 EOR: ""    //place keeper, no comma needed
             },
+
+            currMovieRec: movieRecType,
 
             searchParam: {
                 //everything that stays fixed for search parameters
@@ -125,12 +151,19 @@
             searchLat: "",
             searchLon: "",
             searchDist: "",  //in kilometers
+            movieIDvals: [],  //all the movie ID's
+            movieStack: [],  //array of movieRecType, sorted by movie name
+
 
             buildSearchStr: function (typeSearch, indexNum) {
                 var timeFromStr = "2018-02-18T00:00:00-08:00";
                 var timeToStr = "2018-02-19T00:00:00-08:00";
                 var outString = "";
                 var SP = this.searchParam;
+                var formatStr = "YYYY-MM-DD h:mm:ss";
+                //timeFromStr = moment().format(formatStr);
+                timeFromStr = moment().utc().format();
+                timeToStr = moment().add(12, "hours").utc().format();
                 if (typeSearch == 1) {
                     outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.qryGeoLocation + theaterObj.searchLat + "," + theaterObj.searchLon + SP.qryDistance + theaterObj.searchDist;
                     //outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.urlCountry + SP.urlBoundGeo;
@@ -143,7 +176,7 @@
                     console.log(outString);
                 };
                 if (typeSearch == 3) {
-                    var movieID = theaterObj.theaterStack[indexNum].theaterRec.movie_id;
+                    var movieID = theaterObj.movieIDvals[indexNum];
                     if (movieID === "" || movieID === null) {
                         //null movieID
                         outString = "";
@@ -156,9 +189,167 @@
                 return outString;
             },
 
+
+            doSearchInitial: function () {
+                //function to do current search
+                //return the response    
+                //typeSearch = 1 is the closest theaters
+
+                dataSrchDone = false;
+                var shouldSearch = true;
+                //stop from multiple searches
+                var urlString = this.buildSearchStr(1, 0);
+                //check if it is a null string, if so, then need to take care of
+                if (urlString === "") { shouldSearch = false; };
+                if (shouldSearch) {
+                    jQuery.ajax({
+                        url: urlString,
+                        type: "GET"
+                    })
+                        .done(function (dataSrch, textStatus, jqXHR) {
+                            console.log("HTTP Request Succeeded: " + jqXHR.status);
+                            //console.log(dataSrch);
+                            dataTheaterSearch = jQuery.extend(true, {}, dataSrch);
+                            theaterObj.doSearchInitialDone();
+                            //return dataTheaterSearch;
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                            console.log("HTTP Request Failed");
+                        })
+                        .always(function () {
+                            /* ... */
+                        });
+                } else {
+                    //mimic a search was finished
+                    theaterObj.doSearchInitialDone();
+                };
+            },
+
+
+            doSearchInitialDone: function () {
+                //part one of search is done
+                theaterObj.theaterResponseToStack(dataTheaterSearch);
+                console.log("... done ....");
+                //all of the theater records are in
+                //need to now get all the movie Id
+                var tStack = theaterObj.theaterStack;
+                var numRecs = tStack.length;
+                theaterObj.clearMovieIDvals();
+                theaterObj.clearMovieStack();
+
+                //push the first one
+                theaterObj.movieIDvals.push(tStack[0].theaterRec.movie_id);
+                //loop thru and load single occurance of each movie ID
+                for (var i = 0; i < numRecs; i++) {
+                    if (tStack[i].theaterRec.movie_id == null) {
+                        //sometimes searches come back with nothing
+                        console.log("null at " + i);
+                    } else {
+                        //loop thru all and add single movie_id's to array to search later
+                        if (theaterObj.movieIDvals.indexOf(tStack[i].theaterRec.movie_id) < 0) {
+                            //the movie id has not been used
+                            theaterObj.movieIDvals.push(tStack[i].theaterRec.movie_id);
+                        };
+                    };
+                };
+
+                //now have to search the movie id's
+                theaterObj.numSearchConv = 0;
+                theaterObj.doMovieSearch(theaterObj.numSearchConv);
+            },
+
+
+            doMovieSearch: function (indexNum) {
+                //function to do movie id search to get name of movie
+
+                dataSrchDone = false;
+                var shouldSearch = true;
+                //stop from multiple searches
+                var movieID = theaterObj.movieIDvals[indexNum];
+                theaterObj.currMovieRec.movie_id = movieID;
+                console.log("searching movie: " + indexNum + " id=" + movieID);
+
+                var urlString = this.buildSearchStr(3, indexNum);
+                //check if it is a null string, if so, then need to take care of
+                if (urlString === "") { shouldSearch = false; };
+                if (shouldSearch) {
+                    jQuery.ajax({
+                        url: urlString,
+                        type: "GET"
+                    })
+                        .done(function (dataSrch, textStatus, jqXHR) {
+                            console.log("HTTP Request Succeeded: " + jqXHR.status);
+                            console.log(dataSrch);
+                            dataTheaterSearch = jQuery.extend(true, {}, dataSrch);
+                            dataSrchDone = true;
+                            theaterObj.doMovieSearchDone(indexNum);
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                            console.log("HTTP Request Failed");
+                        })
+                        .always(function () {
+                            /* ... */
+                        });
+                } else {
+                    //mimic a search was finished
+                    theaterObj.doMovieSearchDone(indexNum);
+                };
+            },
+
+
+            doMovieSearchDone: function (indexNum) {
+                //searching on movie names
+                var mRec = theaterObj.currMovieRec;
+                mRec.title = dataTheaterSearch.movie.original_title;
+                if (dataTheaterSearch.movie.age_limits != null) {
+                    mRec.rating = dataTheaterSearch.movie.age_limits.US;
+                } else {
+                    mRec.rating = "none";
+                };
+                mRec.runtime = dataTheaterSearch.movie.runtime;
+                mRec.imdb_id = dataTheaterSearch.movie.imdb_id;
+                mRec.thumbImgUrl = dataTheaterSearch.movie.poster_image.image_files[0].url;
+                //mRec.movie_id = dataTheaterSearch.theaterRec.movie_id;
+
+                //clear all current genres
+                var currAmount = mRec.genres.length;
+                for (var i = 0; i < currAmount; i++) {
+                    //loop thru and add in all the genres for the film
+                    mRec.genres.pop();
+                };
+
+                var endVal = dataTheaterSearch.movie.genres.length;
+                for (var i = 0; i < endVal; i++) {
+                    //loop thru and add in all the genres for the film
+                    mRec.genres.push(dataTheaterSearch.movie.genres[i].name);
+                };
+
+                //can not just add to the stack, need to put in alpha order
+                theaterObj.addToMovieStack();
+                //var newObj = jQuery.extend(true, {}, mRec);
+                //theaterObj.movieStack.push(newObj);    //object is now on the stack
+
+
+                theaterObj.numSearchConv++; //go to the next one
+                //check if all the movie ID's have been searched
+                if (theaterObj.numSearchConv < theaterObj.movieIDvals.length) {
+                    //do another search
+                    theaterObj.doMovieSearch(theaterObj.numSearchConv);
+                } else {
+                    outputMovies();
+                };
+            },
+
+
             doSearch: function (typeSearch, indexNum) {
                 //function to do current search
                 //return the response    
+                //typeSearch = 1 is the closest theaters
+
                 dataSrchDone = false;
                 var shouldSearch = true;
                 //stop from multiple searches
@@ -208,6 +399,7 @@
                     theaterObj.doSearchDone(typeSearch, indexNum);
                 };
             },
+
 
             doSearchDone: function (typeSearch, indexNum) {
                 if (typeSearch == 1) {
@@ -289,7 +481,7 @@
                 //this is parsing for iShowTimes
                 //stack is NOT CLEARED prior to entering
                 var stArray = responseIn.showtimes;  //showtimes array shortcut
-                console.log("stArray");
+                console.log("response in");
                 console.log(stArray);
 
                 var currTheaterRec = theaterObj.currTheater.theaterRec; //shortcut
@@ -304,8 +496,67 @@
                     currTheaterRec.start_at = stArray[i].start_at;
                     theaterObj.pushToStack();  //make permanent
                 };
+            },
 
-                console.log(endVal);
+            clearMovieIDvals: function () {
+                var endVal = theaterObj.movieIDvals.length;
+                for (var i = 0; i < endVal; i++) {
+                    theaterObj.movieIDvals.pop();
+                }
+            },
+
+            clearMovieStack: function () {
+                //clears all the current values in the array
+                var endVal = theaterObj.movieStack.length;
+                for (var i = 0; i < endVal; i++) {
+                    theaterObj.movieStack.pop();
+                };
+            },
+
+            addToMovieStack: function () {
+                //takes the currMovie and treats as record and pushes to stack array
+                //puts in alpahbetical order onto the movie stack
+                //have to make a copy of an object before pushing it anywhere
+                if (theaterObj.movieStack.length === 0) {
+                    //no records on the stack so push the first one
+                    var newObj = jQuery.extend(true, {}, theaterObj.currMovieRec);
+                    theaterObj.movieStack.push(newObj);    //object is now on the stack
+                } else {
+                    var endVal = theaterObj.movieStack.length;
+                    var i = 0;  //loop iterator
+                    //shortened variable names
+                    var mRec = theaterObj.currMovieRec;
+                    var mStack = theaterObj.movieStack;
+                    var loopContinue = true;
+                    do {
+                        console.log("i=" + i);
+                        if (mRec.title.toUpperCase() > mStack[i].title.toUpperCase()) {
+                            if (i === (endVal - 1)) {
+                                //at the end of the loop, so push at end
+                                var newObj = jQuery.extend(true, {}, mRec);
+                                mStack.push(newObj);    //object is now on the stack                                
+                                loopContinue = false;
+                            } else {
+                                //it is greater than, so keep moving
+                                i++;
+                                loopContinue = true;
+                            };
+                        } else {
+                            //it is less then check if it is the first one 
+                            if (i === 0) {
+                                var newObj = jQuery.extend(true, {}, mRec);
+                                mStack.unshift(newObj);    //adds to begining of stack                                
+                                loopContinue = false;
+                            } else {
+                                //splice into the middle of the array
+                                var newObj = jQuery.extend(true, {}, mRec);
+                                mStack.splice(i, 0, newObj);
+                                loopContinue = false;
+                            };
+                        };
+
+                    } while (loopContinue);
+                };
             },
 
             EOR: ""    //place keeper so don't have to worry about stupid commas
@@ -313,7 +564,7 @@
 
         var testSearch = function () {
             theaterObj.clearStack();
-            theaterObj.doSearch(1, 0);
+            theaterObj.doSearchInitial();
             console.log("data search done = " + dataSrchDone);
 
             var continF = true;
@@ -341,21 +592,67 @@
             //outputs search to movies
             var divOutput = $("#movieOutput");
             divOutput.html("");
-            var numFound = theaterObj.theaterStack.length;
+            var mStack = theaterObj.movieStack;
+            var numFound = mStack.length;
             for (var i = 0; i < numFound; i++) {
                 //loop thru the entire stack
-                var stackPtr = theaterObj.theaterStack[i];
+                //var stackPtr = th[i];
+
                 var newRow = $("<div>");
                 $(newRow).addClass("row");
-                var movieStr = stackPtr.movie.title;
-                var rating = stackPtr.movie.rating;
-                var theaterName = stackPtr.theaterName;
-                var theaterStreet = stackPtr.address.street;
-                var theaterCity = stackPtr.address.city;
-                var theaterState = stackPtr.address.state;
-                var startTime = moment(stackPtr.theaterRec.start_at).format("h:mm a");
-                var runTime = stackPtr.movie.runtime + " min";
-                var stopTime = moment(stackPtr.theaterRec.start_at).add(stackPtr.movie.runtime, "minutes").format("h:mm a");
+                var movieStr = mStack[i].title;
+                var rating = mStack[i].rating;
+                var runTime = mStack.runtime + " min";
+
+                var H2tag = $("<h4>");
+                var line1str = movieStr;
+                var newPtag = $("<p>");
+
+                $(H2tag).text(line1str);
+                $(H2tag).appendTo(newPtag);
+                $(newPtag).appendTo(newRow);
+
+                var line2str = "";
+                newPtag = $("<p>");
+                newPtag.text(line2str);
+                $(newPtag).appendTo(newRow);
+
+                var urlMovieThumb = mStack[i].thumbImgUrl;
+                var imgTag = $("<img>");
+                $(imgTag).attr("src", urlMovieThumb)
+                $(imgTag).appendTo(newRow);
+                //$(newRow).appendTo(divOutput);
+
+                newPtag = $("<p>");
+                HRtag = $("<hr>");
+                $(HRtag).appendTo(newPtag);
+                $(newPtag).appendTo(newRow);
+                $(newRow).appendTo(divOutput);
+            };
+        };
+
+
+        var outputShowTimes = function () {
+            //outputs search to movies
+            var divOutput = $("#movieOutput");
+            divOutput.html("");
+            var mStack = theaterObj.movieStack.length;
+            var numFound = mStack.length;
+            for (var i = 0; i < numFound; i++) {
+                //loop thru the entire stack
+                var stackPtr = th[i];
+
+                var newRow = $("<div>");
+                $(newRow).addClass("row");
+                var movieStr = mStack[i].movie.title;
+                var rating = mStack[i].movie.rating;
+                //var theaterName = stack.theaterName;
+                //var theaterStreet = stackPtr.address.street;
+                //var theaterCity = stackPtr.address.city;
+                //var theaterState = stackPtr.address.state;
+                //var startTime = moment(stackPtr.theaterRec.start_at).format("h:mm a");
+                var runTime = mStack.runtime + " min";
+                //var stopTime = moment(stackPtr.theaterRec.start_at).add(stackPtr.movie.runtime, "minutes").format("h:mm a");
 
                 var H2tag = $("<h3>");
                 var line1str = movieStr;
@@ -400,7 +697,8 @@
                 $(newRow).appendTo(divOutput);
             };
         };
-    
+
+
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition);
@@ -410,9 +708,9 @@
         };
 
         function showPosition(position) {
-            $( "#input-lat" ).val( numeral( position.coords.latitude ).format("0000.000000") );
-            $( "#input-lon" ).val( numeral( position.coords.longitude ).format("0000.000000") );
-            $( "#input-dist" ).val( numeral( 5 ).format("0.0") );
+            $("#input-lat").val(numeral(position.coords.latitude).format("0000.000000"));
+            $("#input-lon").val(numeral(position.coords.longitude).format("0000.000000"));
+            $("#input-dist").val(numeral(5).format("0.0"));
         };
 
 
