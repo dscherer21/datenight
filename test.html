@@ -168,9 +168,10 @@
             numSearchConv: 0,      //storage for the loop going thru the conversion
             searchLat: "",
             searchLon: "",
-            searchDist: "",  //in kilometers
-            movieIDvals: [],  //all the movie ID's
-            movieStack: [],  //array of movieRecType, sorted by movie name
+            searchDist: "",     //in kilometers
+            movieIDvals: [],    //all the movie ID's
+            movieStack: [],     //array of movieRecType, sorted by movie name
+            genresStack: [],   //all the genres found
 
 
             buildSearchStr: function (typeSearch, indexNum) {
@@ -256,6 +257,10 @@
                 var numRecs = tStack.length;
                 theaterObj.clearMovieIDvals();
                 theaterObj.clearMovieStack();
+                //clear out the genres stack
+                for (var i = 0; i < theaterObj.genresStack.length; i++) {
+                    theaterObj.genresStack.pop();
+                };
 
                 //push the first one
                 theaterObj.movieIDvals.push(tStack[0].theaterRec.movie_id);
@@ -362,14 +367,25 @@
                 //clear all current genres
                 var currAmount = mRec.genres.length;
                 for (var i = 0; i < currAmount; i++) {
-                    //loop thru and add in all the genres for the film
                     mRec.genres.pop();
                 };
 
+                var genStack = theaterObj.genresStack;  //use as shortcut
                 var endVal = dataTheaterSearch.movie.genres.length;
                 for (var i = 0; i < endVal; i++) {
                     //loop thru and add in all the genres for the film
                     mRec.genres.push(dataTheaterSearch.movie.genres[i].name);
+                    //after adding for the movie, add into stack and make sure
+                    //it is a unique entry
+                    if (genStack.length === 0) {
+                        //no entries so push in the first one
+                        genStack.push(dataTheaterSearch.movie.genres[i].name);
+                    } else {
+                        if (genStack.indexOf(dataTheaterSearch.movie.genres[i].name) < 0) {
+                            //no match in current stack, so insert it
+                            genStack.push(dataTheaterSearch.movie.genres[i].name);
+                        };
+                    };
                 };
 
                 //can not just add to the stack, need to put in alpha order
