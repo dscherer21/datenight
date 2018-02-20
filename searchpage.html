@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Date Night</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--Bootstrap 3 Link-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!--Google Fonts: Lobster and Courgette-->
+        <link href="https://fonts.googleapis.com/css?family=Courgette|Lobster" rel="stylesheet">
+        <!--External CSS Link-->
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <!--JQuery Link Tag-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <!--Slide-out Navbar-->
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn">&times;</a>
+            <a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Clients</a>
+            <a href="#">Contact</a>
+            <h3>Contributors</h3>
+            <a href='https://dscherer21.github.io/bootstrap-portfolio/' target='_blank'>David</a>
+            <a href='https://peterlgustafson.github.io/Responsive-Portfolio/' target='_blank'>Peter</a>
+            <a href='https://richbu.github.io/Bio/' target='_blank'>Rich</a>
+          </div>
+        <!--Header-->
+        <header class="">
+            <div class="navbar navbar-relative-top container-fluid">
+                <a href="index.html" class="col-xs-3"><img  class="img img-thumbnail" src="assets/images/datenightlogo.png" alt="DateNight Logo"></a>
+                <h1 class="col-xs-6 text-center">DateNight</h1>
+                <a class="col-xs-3"><img class="img img-thumbnail" id="navIcon" src="assets/images/navbaricon.png" alt="Nav Bar Icon"></a>
+            </div>
+        </header>
+
+        <!--Main-->
+        <main class="container">
+            <div class="row">
+                <h2 class="text-center">Let us help you refine your search:</h2>
+            </div>
+            <!--Moive Carousel-->
+            <h2>What movie would you like to see?</h2>
+            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                <!--Carousel Items go in here!-->
+                <div class="carousel-inner">
+                    <!--Example Carousel Item with a card inside-->
+                    <div class="carousel-item active ">
+                        <div class="card d-block w-100" style="width: 20rem;">
+                            <!--Movie Poster Here-->
+                            <img class="card-img-top" src="#" alt="Movie Poster Here">
+                            <div class="card-block">
+                                <!--Movie Title Here-->
+                                <h4 class="card-title">Movie Title Here</h4>
+                                <!--Short Movie Desctription Here-->
+                                <p class="card-text">Short Movie Description Here</p>
+                                <!--Check Box-->
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                    <label class="form-check-label" for="exampleCheck1">I choose this one!</label>
+                            </div>
+                            <!--Go to movie trailer button-->
+                            <button href="#" target="_blank" class="btn btn-primary">Watch Movie Trailer</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+                <!--Carousel Controls-->
+                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+            <!--Zip or city and State search form-->
+            <form>
+                <div class="form-group">
+                    <label for="cityZipSearch">Please enter your City and State or Zip Code:</label>
+                    <input type="City,ST or Zipcode" class="form-control" id="cityZipSearch" placeholder="City,ST or Zip">
+                </div>
+            </form>
+            <!--Food Type search form-->
+            <form>
+                <div class="form-group">
+                    <label for="foodSearch">What kind of food are you hungry for?</label>
+                    <input type="food type" class="form-control" id="foodSearch" placeholder="Food Type Here">
+                </div>
+            </form>
+            <div class="text-center">
+              <!--Search Button-->
+              <a href='resultspage.html'><button class="btn btn-primary">Search</button></a>
+            </div>
+
+        </main>
+        <hr>
+        <hr>
+        <hr>
+        <hr>
+
+        <!--Footer-->
+        <footer class="container">
+            <div class="text-center navbar navbar-fixed-bottom">
+                <div class="container-fluid">
+                    <p class="specialFont">© 2018 Copyright</p>
+                </div>
+            </div>
+        </footer>
+        <!--External JavaScript Link-->
+        <script src="assets/javascript/app.js"></script>
+    </body>
+</html>

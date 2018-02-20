@@ -1,6 +1,6 @@
 # datenight
 Peter is a loser
-David agress!
+David agrees!
 Rich was here
 Rich is rich
 
