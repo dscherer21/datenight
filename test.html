@@ -87,18 +87,34 @@
         };
 
 
-        var movieRecType = {
+        var movieRecType = {  //this is what is stored for each movie
             title: "",
             rating: "",
             runtime: "",
             imdb_id: "", // incase want to search other web sites
             thumbImgUrl: "",    //thumbnail sized image files
             genres: [],
+            synopsis: "",
             movie_id: "",
-            urlWebsite : "",
-            urlTrailer : ""
+            urlWebsite: "",
+            urlTrailer: ""
         };
 
+        var theaterFoundType = {  //this is for every theater that was found
+            cinema_id: "",      //id to link to name of theater
+            theaterName: "",   //actual name of the theater
+            address: {
+                dispText: "",
+                houseNum: "",
+                street: "",
+                city: "",
+                state: "",
+                zipCode: "",
+                geoLocLat: 0,
+                geoLocLong: 0,
+                distToCenter: 0
+            }
+        };
 
         var theaterObj = {   //main object for the whole theater
             currTheater: {
@@ -306,7 +322,7 @@
             doMovieSearchDone: function (indexNum) {
                 //searching on movie names
                 var mRec = theaterObj.currMovieRec;
-                if (dataTheaterSearch.movie.title==null || dataTheaterSearch.movie.title==="" ){
+                if (dataTheaterSearch.movie.title == null || dataTheaterSearch.movie.title === "") {
                     //title is blank, then user original title
                     mRec.title = dataTheaterSearch.movie.original_title;
                 } else {
@@ -319,10 +335,25 @@
                 };
                 mRec.urlWebsite = dataTheaterSearch.movie.website;
                 //now only move the trailer if it exists
-                if( dataTheaterSearch.movie.trailers.length >=0 ) {
-                    
+                if (dataTheaterSearch.movie.trailers != null) {
+                    //there are trailers
+                    //load the first trailer and then replace if there are english
+                    mRec.urlTrailer = dataTheaterSearch.movie.trailers[0].trailer_files[0].url;
+                    var numTrailers = dataTheaterSearch.movie.trailers.length;
+                    for (var i = 0; i < numTrailers; i++) {
+                        if (dataTheaterSearch.movie.trailers.language === "en-US") {
+                            //use the English trailer
+                            mRec.urlTrailer = dataTheaterSearch.movie.trailers[i].trailer_files[0].url;
+                        } else if (dataTheaterSearch.movie.trailers.language === "en") {
+                            mRec.urlTrailer = dataTheaterSearch.movie.trailers[i].trailer_files[0].url;
+                        };
+                    };
+                };
+                if (dataTheaterSearch.movie.trailers != null) {
+                    mRec.synopsis = dataTheaterSearch.movie.synopsis;
+                } else {
+                    mRec.synopsis = "";
                 }
-                //mRec.urlTrailer = dataTheaterSearch.trailers[0].trailer_files[0].url;
                 mRec.runtime = dataTheaterSearch.movie.runtime;
                 mRec.imdb_id = dataTheaterSearch.movie.imdb_id;
                 mRec.thumbImgUrl = dataTheaterSearch.movie.poster_image.image_files[0].url;
@@ -582,22 +613,7 @@
 
             var continF = true;
 
-            //wait for the data to come bacl
-            //    if( dataSrchDone == true ) { continF = false; };
-            //} while (continF );
-            //console.log(  dataTheaterSearch );
-
-            /*
-            setTimeout( function(){
-                console.log("done = " + dataSrchDone );
-                console.log(searchResult);
-                //theaterObj.theaterResponseToStack(searchResult);
-            } , 5000 );
-            */
-
-            //   do {
             console.log("waiting for a return");
-            //      } while ( searchResult===undefined );
         };
 
 
