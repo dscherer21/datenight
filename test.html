@@ -60,6 +60,42 @@
         <div id="movieOutput"></div>
     </div>
 
+    <!-- Modal windows come up next -->
+    <!-- GPS Modal -->
+    <div id="modLocation" class="modal">
+        <div class="modal-content">
+            <span id="closeModLocation" class="close">&times;</span>
+            <h2>
+                <p>Searching for GPS location</p>
+            </h2>
+            <p> </p>
+            <p>Please allow location privaledge and then wait</p>
+        </div>
+    </div>
+    <!-- Searching for all movie entries Modal -->
+    <div id="modSearch1" class="modal">
+        <div class="modal-content">
+            <span id="closeModSearch1" class="close">&times;</span>
+            <h2>
+                <p>Searching for all theaters and movies within search area</p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
+    <!-- Searching for all movie entries Modal -->
+    <div id="modSearch2" class="modal">
+        <div class="modal-content">
+            <span id="closeModSearch1" class="close">&times;</span>
+            <h2>
+                <p>Searching for all movie data </p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
+
+
     <script>
         var configData = {
             theaterSearchDist: 2, //2 miles search earea
@@ -68,8 +104,11 @@
         };
 
 
+        var modalWaitSearch1 = document.getElementById('modSearch1'); //earch all records
+        var modalWaitSearch2 = document.getElementById('modSearch2'); //search movies
+        //        var modalWaitSearch3 = document.getElementById('modSearch3'); //search cinemas
+        var modalWaitLocation = document.getElementById('modLocation'); //location
 
-        configData.restaurantSearchDist
 
 
         var dataSrch = "";
@@ -165,6 +204,8 @@
 
             //variables are here
             theaterStack: [],      //array of theaters  --- treat as stack
+            theatersFoundStack: [],  //all the theaters found
+            cinemaIDstack: [],     //to look up unique cinema ID's
             numSearchConv: 0,      //storage for the loop going thru the conversion
             searchLat: "",
             searchLon: "",
@@ -278,6 +319,8 @@
                     };
                 };
 
+                modalWaitSearch1.style.display = "none";
+                modalWaitSearch2.style.display = "block";
                 //now have to search the movie id's
                 theaterObj.numSearchConv = 0;
                 theaterObj.doMovieSearch(theaterObj.numSearchConv);
@@ -400,6 +443,7 @@
                     //do another search
                     theaterObj.doMovieSearch(theaterObj.numSearchConv);
                 } else {
+                    modalWaitSearch2.style.display = "none";
                     outputMovies();
                 };
             },
@@ -555,8 +599,25 @@
                     currTheaterRec.movie_id = stArray[i].movie_id;
                     currTheaterRec.start_at = stArray[i].start_at;
                     theaterObj.pushToStack();  //make permanent
+                    //add it to unique theater list
+                    if (theaterObj.theatersFoundStack.length === 0) {
+                        var theaterFoundRec = Object.create(theaterFoundType);
+                        theaterFoundRec.cinema_id = stArray[i].cinema_id;
+                        theaterObj.theatersFoundStack.push(theaterFoundRec);
+                        theaterObj.cinemaIDstack.push(theaterFoundRec.cinema_id); //unique ID lookup list
+                    } else {
+                        //there is more than one entry, so make sure it is unique
+                        if (theaterObj.cinemaIDstack.indexOf(currTheaterRec.cinema_id) < 0) {
+                            //this is a new cinema not on the stack 
+                            var theaterFoundRec = Object.create(theaterFoundType);
+                            theaterFoundRec.cinema_id = stArray[i].cinema_id;
+                            theaterObj.theatersFoundStack.push(theaterFoundRec);
+                            theaterObj.cinemaIDstack.push(theaterFoundRec.cinema_id); //unique ID lookup list
+                        };
+                    };
                 };
             },
+
 
             clearMovieIDvals: function () {
                 var endVal = theaterObj.movieIDvals.length;
@@ -624,11 +685,19 @@
 
         var testSearch = function () {
             theaterObj.clearStack();
+            modalWaitSearch1.style.display = "block";
+
+            //clear all the movie theaters found in the area
+            for (var i = 0; i < theaterObj.theatersFoundStack.length; i++) {
+                theaterObj.theatersFoundStack.pop();
+            };
+            //clear all the movie theaters found in the area
+            for (var i = 0; i < theaterObj.cinemaIDstack.length; i++) {
+                theaterObj.cinemaIDstack.pop();
+            };
+
             theaterObj.doSearchInitial();
             console.log("data search done = " + dataSrchDone);
-
-            var continF = true;
-
             console.log("waiting for a return");
         };
 
@@ -639,6 +708,42 @@
             divOutput.html("");
             var mStack = theaterObj.movieStack;
             var numFound = mStack.length;
+
+            //findings heading
+            var newRow = $("<div>");
+            $(newRow).addClass("row");
+            var newPtag = $("<p>");
+            var H3tag = $("<h3>");
+            var findingsStr = "What was found:";
+            $(H3tag).text(findingsStr);
+            $(H3tag).appendTo(newPtag);
+            $(newPtag).appendTo(newRow);
+
+            var H4tag = $("<h4>");
+            findingsStr = "Num of movies = " + numFound;
+            findingsStr += " in " + theaterObj.cinemaIDstack.length + " theaters.";
+            $(H4tag).text(findingsStr);
+            $(H4tag).appendTo(newPtag);
+            H4tag = $("<h4>");
+            findingsStr = "Num of genres = " + theaterObj.genresStack.length;
+            $(H4tag).text(findingsStr);
+            $(H4tag).appendTo(newPtag);
+
+            theaterObj.genresStack.sort();
+            newPtag = $("<p>");
+            //$(newPtag).text("Genres found and sorted:");
+            //$(newPtag).appendTo(newRow);
+            var genresFoundStr = "";
+            for (var i = 0; i < theaterObj.genresStack.length; i++) {
+                genresFoundStr += theaterObj.genresStack[i] + " , ";
+            };
+            //newPtag = $("<p>");
+            $(newPtag).text(genresFoundStr);
+            $(newPtag).appendTo(newRow);
+
+            $(newRow).appendTo(divOutput);
+
+
             for (var i = 0; i < numFound; i++) {
                 //loop thru the entire stack
                 //var stackPtr = th[i];
@@ -659,7 +764,7 @@
 
                 var line2str = "";
                 newPtag = $("<p>");
-                newPtag.text(line2str);
+                $(newPtag).text(line2str);
                 $(newPtag).appendTo(newRow);
 
                 var urlMovieThumb = mStack[i].thumbImgUrl;
@@ -668,12 +773,39 @@
                 $(imgTag).appendTo(newRow);
                 //$(newRow).appendTo(divOutput);
 
+                //put rating to page
+                newPtag = $("<p>");
+                $(newPtag).text("rating: " + mStack[i].rating);
+                $(newPtag).appendTo(newRow);
+
+                //put to page the genres for this movie
+                var lineGenres = "";
+                var currAmount = mStack[i].genres.length;
+                for (var k = 0; k < currAmount; k++) {
+                    lineGenres += mStack[i].genres[k] + " , ";
+                };
+                newPtag = $("<p>");
+                $(newPtag).text(lineGenres);
+                $(newPtag).appendTo(newRow);
+
                 newPtag = $("<p>");
                 HRtag = $("<hr>");
                 $(HRtag).appendTo(newPtag);
                 $(newPtag).appendTo(newRow);
                 $(newRow).appendTo(divOutput);
             };
+            newRow = $("<div>");
+            $(newRow).addClass("row");
+            newPtag = $("<p>");
+            HRtag = $("<hr>");
+            $(HRtag).appendTo(newPtag);
+            $(newPtag).appendTo(newRow);        //hor row
+            $(newPtag).appendTo(newRow);        //2nd hor row
+
+
+            //finish out the row
+            $(newRow).appendTo(divOutput);
+
         };
 
 
@@ -745,40 +877,47 @@
 
 
         function getLocation() {
+            modalWaitLocation.style.display = "block";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition);
             } else {
-                x.innerHTML = "Geolocation is not supported by this browser.";
+                //no GPS allowed
+                alert("Geolocation is not supported by this browser.");
             }
+
         };
 
         function showPosition(position) {
             $("#input-lat").val(numeral(position.coords.latitude).format("0000.000000"));
             $("#input-lon").val(numeral(position.coords.longitude).format("0000.000000"));
-            $("#input-dist").val(numeral(5).format("0.0"));
+            $("#input-dist").val(numeral(configData.theaterSearchDist).format("0.0"));
+            modalWaitLocation.style.display = "none";
         };
 
+        $(document).ready(function () {
+            getLocation();
 
-        getLocation();
+            $("#bttnUserInput").on("click", function (event) {
+                //submit button was pushed
+                console.log("submit clicked");
+                event.preventDefault();
+                theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
+                theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
+                var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
+                theaterObj.searchDist = numeral(distInKM).format("+0000.0000");
 
-        $("#bttnUserInput").on("click", function (event) {
-            //submit button was pushed
-            console.log("submit clicked");
-            event.preventDefault();
-            theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
-            theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
-            var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
-            theaterObj.searchDist = numeral(distInKM).format("+0000.0000");
+                if (theaterObj.searchLat === "+0000.000000" || theaterObj.searchLon === "+0000.000000") {
+                    //left blank, so put in Evanston as default
+                    theaterObj.searchLat = numeral(42.048995).format("+0000.000000");
+                    theaterObj.searchLon = numeral(-87.684505).format("+0000.000000");
+                    theaterObj.searchDist = numeral(6.00).format("+0000.0000");
+                };
 
-            if (theaterObj.searchLat === "+0000.000000" || theaterObj.searchLon === "+0000.000000") {
-                //left blank, so put in Evanston as default
-                theaterObj.searchLat = numeral(42.048995).format("+0000.000000");
-                theaterObj.searchLon = numeral(-87.684505).format("+0000.000000");
-                theaterObj.searchDist = numeral(6.00).format("+0000.0000");
-            }
-            testSearch();
+                //for modal popups
+
+                testSearch();
+            });
         });
-
     </script>
 
 </body>
