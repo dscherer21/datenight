@@ -11,6 +11,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Date Night</title>
+    <link rel="stylesheet" type="text/css" href="style_test.css">
+
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  -->
 
     <!-- load in a reset of CSS  -->
@@ -60,7 +62,7 @@
     </div>
     <div class="wrapper">
         <div class="container-fluid">
-            <div id="movieOutput" style="margin:3px; padding:5px"></div>
+            <div id="movieOutput" style="margin:5px; padding:5px"></div>
         </div>
     </div>
     <!-- Modal windows come up next -->
@@ -108,6 +110,17 @@
             <p>Please wait ...</p>
         </div>
     </div>
+    <!-- Searching for cinema address Modal -->
+    <div id="modMovieTimes" class="modal">
+        <div class="modal-content">
+            <span id="closeModMovieTimes" class="close">&times;</span>
+            <h2>
+                <p>Getting movie times</p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
 
 
     <script>
@@ -122,6 +135,7 @@
         var modalWaitSearch2 = document.getElementById('modSearch2'); //search movies
         var modalWaitSearch3 = document.getElementById('modSearch3'); //search cinemas
         var modalWaitLocation = document.getElementById('modLocation'); //location
+        var modalWaitMovieTimes = document.getElementById('modMovieTimes'); //movie times
 
 
 
@@ -165,9 +179,10 @@
                 state: "",
                 zipCode: "",
                 geoLocLat: 0,
-                geoLocLong: 0,
-                distToCenter: 0
-            }
+                geoLocLong: 0
+            },
+            distToCenter: 0,
+            travelTime: 0
         };
 
         var theaterObj = {   //main object for the whole theater
@@ -183,8 +198,9 @@
                     zipCode: "",
                     geoLocLat: 0,
                     geoLocLong: 0,
-                    distToCenter: 0
                 },
+                distToCenter: 0,
+                travelTime: 0,
                 url: "",
                 telephone: "",
                 movie: {
@@ -727,8 +743,7 @@
 
 
             for (var i = 0; i < numFound; i++) {
-                //loop thru the entire stack
-                //var stackPtr = th[i];
+                //loop thru the all movies found
 
                 var newRow = $("<div>");
                 $(newRow).addClass("row");
@@ -749,11 +764,59 @@
                 $(newPtag).text(line2str);
                 $(newPtag).appendTo(newRow);
 
+                //create a panel for the image
                 var urlMovieThumb = mStack[i].thumbImgUrl;
                 var imgTag = $("<img>");
                 $(imgTag).attr("src", urlMovieThumb)
-                $(imgTag).appendTo(newRow);
-                //$(newRow).appendTo(divOutput);
+                //var toolTipStr = "title: " + "\n";
+                //toolTipStr += "";
+                //toolTipStr += "\n\n";
+                $(imgTag).attr("id", mStack[i].movie_id);
+                //$(imgTag).attr("data-toggle", "tooltip");
+                //$(imgTag).attr("title", toolTipStr);
+                //$(imgTag).attr("data-image", i); //data for click
+                //$(imgTag).addClass("movie-pic");  //for mass adds
+                $(imgTag).css("width", "92px");
+                $(imgTag).css("height", "138px");
+                $(imgTag).css("border", "2px");
+                $(imgTag).css("margin", "5px")
+                $(imgTag).css("margin", "5px");
+
+                //create <div> panel with 2 parts, header and content
+                var divPanel = $("<div>");
+                $(divPanel).addClass("panel");
+                $(divPanel).addClass("panel-info");
+                $(divPanel).addClass("panelMinMargin");
+                //$(divPanel).css("float", "left");
+                $(divPanel).css("width", "110px");
+                $(divPanel).css("height", "152px");
+                //to allow clicking and the data for the image    
+                $(divPanel).attr("data-image", i); //data for click
+                $(divPanel).addClass("movie-pic");  //for mass adds
+
+
+                /*    
+                var divPanelHead = $("<div>");
+                $(divPanelHead).addClass("panel-heading");
+                $(divPanelHead).addClass("panelMinPadding");
+                $(divPanelHead).css("height", "20px");
+
+                var panelHeadText = $("<p>");
+                var panelHeadTextString = mStack[i].title;
+                $(panelHeadText).text(panelHeadTextString);
+                $(panelHeadText).appendTo(divPanelHead);
+
+                $(divPanelHead).appendTo(divPanel);
+                */
+
+                var divPanelBody = $("<div>");
+                $(divPanelBody).addClass("panel-body");
+                $(divPanelBody).addClass("panelMinPadding");
+                $(imgTag).appendTo(divPanelBody);  //iamge goes onto the panel body
+                $(divPanelBody).appendTo(divPanel);
+
+                $(divPanel).appendTo(newRow);
+
 
                 //put rating to page
                 newPtag = $("<p>");
@@ -770,6 +833,17 @@
                 $(newPtag).text(lineGenres);
                 $(newPtag).appendTo(newRow);
 
+                var lineSynopsis = mStack[i].synopsis;
+                newPtag = $("<p>");
+                $(newPtag).text(lineSynopsis);
+                $(newPtag).appendTo(newRow);
+
+
+                $(newRow).appendTo(divOutput);
+
+                //horizontal break line
+                newRow = $("<div>");
+                $(newRow).addClass("row");
                 newPtag = $("<p>");
                 HRtag = $("<hr>");
                 $(HRtag).appendTo(newPtag);
@@ -811,7 +885,7 @@
             var findingsStr = "Theaters found in search area";
             $(H3tag).text(findingsStr);
             $(H3tag).appendTo(newPtag);
-            $(newPtag).appendTo(newRow);    
+            $(newPtag).appendTo(newRow);
             //$(newRow).appendTo(divOutput);
 
             //var newRow = $("<div>");
@@ -827,7 +901,7 @@
                 var zipcode = tfStack[i].address.zipCode;
                 var geoLat = tfStack[i].address.geoLocLat;
                 var geoLong = tfStack[i].address.geoLocLong;
-                var distToCenter = tfStack[i].address.distToCenter;
+                var distToCenter = tfStack[i].distToCenter;
 
 
                 var H3tag = $("<h4>");
@@ -984,7 +1058,6 @@
                 //no GPS allowed
                 alert("Geolocation is not supported by this browser.");
             }
-
         };
 
         function showPosition(position) {
@@ -994,8 +1067,21 @@
             modalWaitLocation.style.display = "none";
         };
 
+        function evalPicClick() {
+            //a picture got clicked
+            var imgClicked = $(this).attr("data-image");
+            modalWaitMovieTimes.style.display = "block";
+            console.log("picture clicked " + imgClicked);
+            var divOutput = $("#movieOutput");
+            divOutput.html("");
+        };
+
+
         $(document).ready(function () {
             getLocation();
+
+            //add click listener to all movie pics
+            $(document.body).on("click", ".movie-pic", evalPicClick);
 
             $("#bttnUserInput").on("click", function (event) {
                 //submit button was pushed
@@ -1014,7 +1100,6 @@
                 };
 
                 //for modal popups
-
                 testSearch();
             });
         });
