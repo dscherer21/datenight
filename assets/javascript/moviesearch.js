@@ -2,7 +2,7 @@
 //script files   
 
 var configData = {
-    theaterSearchDist: 2, //2 miles search earea
+    theaterSearchDist: 5, //2 miles search earea
     restaurantSearchDist: 2, //2 miles
 };
 
@@ -1192,6 +1192,7 @@ var showPosition = function (position) {
 
     theaterObj.searchLat = numeral(position.coords.latitude).format("0000.000000");
     theaterObj.sarchLon = numeral(position.coords.longitude).format("0000.000000");
+    theaterObj.searchDist = configData.theaterSearchDis;
     modalWaitLocation.style.display = "none";
 };
 
