@@ -38,10 +38,13 @@ form {
     border-color: rgba(255,255,255,0);
 }
 
-.carousel-item {
+.card {
+    display: inline-block;
+    border: 1px solid black;
+    margin: 2px;
+    padding: 5px;
     background-color: white;
     color: black;
-    padding: 5px;
 }
 
 .navbar-fixed-bottom {
@@ -102,12 +105,21 @@ hr {
     margin-right: 50px;
 }
 
-#navIcon {
-   
+.carousel-item {
+    display: inline-block;
+    border: 1px solid black;
 }
 
 h3 {
     margin-left: 10px;
+}
+
+.carousel-inner {
+    padding: 10px;
+}
+
+.multi-item-carousel.carousel-inner>.item {
+    transition: 500ms ease-in-out left;
 }
 
 /*Adding styles to fix header overlap on smaller screens*/
