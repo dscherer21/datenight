@@ -1191,8 +1191,8 @@ var showPosition = function (position) {
     //$("#input-dist").val(numeral(configData.theaterSearchDist).format("0.0"));
 
     theaterObj.searchLat = numeral(position.coords.latitude).format("0000.000000");
-    theaterObj.sarchLon = numeral(position.coords.longitude).format("0000.000000");
-    theaterObj.searchDist = configData.theaterSearchDis;
+    theaterObj.searchLon = numeral(position.coords.longitude).format("0000.000000");
+    theaterObj.searchDist = configData.theaterSearchDist;
     modalWaitLocation.style.display = "none";
 };
 
