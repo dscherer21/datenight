@@ -151,6 +151,7 @@
         };
 
         var movieRecType = {  //this is what is stored for each movie
+            index: 0,   //fill in when matching so can know which rec it is on stack
             title: "",
             rating: "",
             runtime: "",
@@ -169,12 +170,15 @@
             cinema_id: "",
             startTime_utc: "",
             startTime_ts: 0, //time stamp
+            runTime_min: 0, //in minutes
+            finishTime_ts: 0,
             distTravel: 0,
             timeTravel: 0,
             timeToLeave: 0,
         };
 
         var theaterFoundType = {  //this is for every theater that was found
+            index: 0, //when doing a match do know which item on stack it is 
             cinema_id: "",      //id to link to name of theater
             theaterName: "",   //actual name of the theater
             address: {
@@ -688,13 +692,14 @@
                 };
             },
 
-            doMoviesFoundList: function() {
+            doMoviesFoundList: function () {
                 //will assemble all of the movies found and put them 
                 //into movieFoundStack, can sort by time
                 //first, clear the stack for movies found
                 var mfStack = theaterObj.movieFoundStack; //shorthand variable
+                var mStack = theaterObj.movieStack; //shorthand for movie stack
                 var cfRec = theaterObj.currMovieFoundRec; //shorthand for curr record
-                for ( var i=0; i<mfStack.length; i++) {
+                for (var i = 0; i < mfStack.length; i++) {
                     mfStack.pop();
                 };
                 //get shorthand for movie
@@ -705,20 +710,65 @@
                 //exercise, step thru manually
                 var tStack = theaterObj.theaterStack; //shorthand
                 var numOrigRecs = tStack.length;
-                for ( var i=0; i<numOrigRecs; i++ ) {
-                    searchMovieID = tStack[i].theaterRec.movie_id;
-                    if ( searchMovieID === currMovieID )  {
+                for (var i = 0; i < numOrigRecs; i++) {
+                    var searchMovieID = tStack[i].theaterRec.movie_id;
+                    if ( searchMovieID === currMovieID) {
                         //a match was found
                         cfRec.movie_id = currMovieID;
                         cfRec.cinema_id = tStack[i].theaterRec.cinema_id;
                         cfRec.startTime_utc = tStack[i].theaterRec.start_at;
-                        cfRec.startTime_ts = moment( tStack[i].start_at ).unix();
-
+                        cfRec.startTime_ts = parseInt(moment(tStack[i].theaterRec.start_at).unix());
+                        //get the rest of the record
+                        var matchMovieRec = theaterObj.retMatchRecFromMovieStack(searchMovieID);
+                        cfRec.runTime_min = matchMovieRec.runtime;
+                        cfRec.finishTime_ts = parseInt(moment(cfRec.startTime_utc).add(cfRec.runTime_min, "minutes").unix());
                         //now that the cfRec is filled, make a copy and pop to movieFoundStack
                         var copyOfRec = jQuery.extend(true, {}, cfRec);
                         mfStack.push(copyOfRec);
                     };
                 };
+            },
+
+            retMatchRecFromMovieStack: function (movieIDmatch) {
+                var continLoop = true;
+                var i = 0;
+                var matchObj;
+                do {
+                    if (theaterObj.movieStack[i].movie_id == movieIDmatch) {
+                        //there is a match
+                        matchObj = jQuery.extend(true, {}, theaterObj.movieStack[i]);
+                        matchObj.index = i;
+                        continLoop = false;
+                    } else {
+                        i++;
+                        if (i >= theaterObj.movieStack.length) {
+                            continLoop = false;
+                            console.log("no movie id match");
+                        };
+                    };
+                } 
+                while (continLoop===true);
+                return matchObj;
+            },
+
+            retMatchRecFromCinemaStack: function (cinemaIDmatch) {
+                var continLoop = true;
+                var i = 0;
+                do {
+                    if (theaterObj.theatersFoundStack[i].cinema_id === cinemaIDmatch) {
+                        //there is a match
+                        var matchObj = jQuery.extend(true, {}, theaterObj.theatersFoundStack[i]);
+                        matchObj.index = i;
+                        continLoop = false;
+                        return matchObj;
+                    } else {
+                        i++;
+                        if (i >= theaterObj.theatersFoundStack.length) {
+                            continLoop = false;
+                            return;
+                        };
+                    };
+                } while (continLoop);
             },
 
             EOR: ""    //place keeper so don't have to worry about stupid commas
@@ -1026,6 +1076,161 @@
         };
 
 
+        var outputMoviesByMovieTime = function () {
+            //outputs search to movies
+            var divOutput = $("#movieOutput");
+            divOutput.html("");
+            var mfStack = theaterObj.movieFoundStack;  //shorthand
+            var numFound = mfStack.length;
+            //sort the movies by start time
+            mfStack.sort(  function(a, b){return a.startTime_ts - b.startTime_ts}  );
+
+            //move to local variables for show and tell purposes
+            //theaterObj.retMatchRecFromMovieStack(mfStack[theaterObj.numMovieClickedIndex].movie_id);
+            var movieRec = theaterObj.retMatchRecFromMovieStack(mfStack[theaterObj.numMovieClickedIndex].movie_id);
+            console.log("back from match");
+            var movieTitle = movieRec.title;
+            var movieRunTime = movieRec.runtime;
+            var movieSynopsis = movieRec.synopsis;
+            var movieThumUrl = movieRec.thumbImgUrl;
+            var movie_url_website = movieRec.urlWebsite;
+            var movie_url_trailer = movieRec.urlTrailer;
+
+            var newRow = $("<div>");
+            $(newRow).addClass("row");
+            $(newRow).css("line-height", "2px");
+            $(newRow).css("margin", "2px");
+            $(newRow).css("padding", "2px");
+            $(newRow).addClass("row");
+
+            //movie name
+            var H3tag = $("<h4>");
+            $(H3tag).css("line-height", "1.0");
+            $(H3tag).css("margin", "0px");
+            $(H3tag).css("padding", "0px");
+            var newPtag = $("<p>");
+            $(newPtag).css("margin", "0px");
+            $(newPtag).css("padding", "0px");
+            $(newPtag).css("line-height", "2px");
+
+            $(H3tag).text(movieTitle);
+            $(H3tag).appendTo(newPtag);
+            var brTag = $("<br/>");
+            $(brTag).appendTo(newPtag);
+
+            var H4tag = $("<h5>");
+            $(H4tag).css("line-height", "1.0");
+            $(H4tag).css("margin", "0px");
+            $(H4tag).css("padding", "0px");
+            $(H4tag).text("run time = " + movieRunTime + " minutes");
+            $(H4tag).appendTo(newPtag);
+            var brTag = $("<br/>");
+            $(brTag).appendTo(newPtag);
+
+            H4tag = $("<h5>");
+            $(H4tag).css("line-height", "1.0");
+            $(H4tag).css("margin", "0px");
+            $(H4tag).css("padding", "0px");
+            $(H4tag).text(movieSynopsis);
+            $(H4tag).appendTo(newPtag);
+            var brTag = $("<br/>");
+            $(brTag).appendTo(newPtag);
+            $(newPtag).appendTo(newRow);        //hor row
+            $(newRow).appendTo(divOutput);
+            newRow = $("<div>");
+            $(newRow).addClass("row");
+
+            //findings heading
+            newPtag = $("<p>");
+            H3tag = $("<h3>");
+            var findingsStr = "Theater Times (sorted by start time)";
+            $(H3tag).text(findingsStr);
+            $(H3tag).appendTo(newPtag);
+            $(newPtag).appendTo(newRow);
+
+            $(newRow).appendTo(divOutput);
+            newRow = $("<div>");
+            $(newRow).addClass("row");
+            newPtag = $("<p>");
+            var HRtag = $("<hr>");
+            $(HRtag).appendTo(newPtag);
+            $(newPtag).appendTo(newRow);        //hor row
+            $(newRow).appendTo(divOutput);
+            newRow = $("<div>");
+            $(newRow).addClass("row");
+
+            for (var i = 0; i < numFound; i++) {
+                //loop thru the entire stack of theaters found
+                newPtag = $("<p>");
+
+                console.log("output rec #" + i);
+                //bring out as local variable for demo purposes
+                var currCinemaRec = theaterObj.retMatchRecFromCinemaStack( mfStack[i].cinema_id);
+                var nameStr = currCinemaRec.theaterName;
+                var address = currCinemaRec.address.houseNum + " " + currCinemaRec.address.street;
+                var city = currCinemaRec.address.city;
+                var state = currCinemaRec.address.state;
+                var zipcode = currCinemaRec.address.zipCode;
+                var geoLat = currCinemaRec.address.geoLocLat;
+                var geoLong = currCinemaRec.address.geoLocLong;
+                var distToCenter = currCinemaRec.distToCenter;
+
+
+                var H3tag = $("<h4>");
+                $(H3tag).css("line-height", "1.0");
+                $(H3tag).css("margin", "0px");
+                $(H3tag).css("padding", "0px");
+                var newPtag = $("<p>");
+                $(newPtag).css("margin", "0px");
+                $(newPtag).css("padding", "0px");
+                $(newPtag).css("line-height", "2px");
+
+                $(H3tag).text(nameStr);
+                $(H3tag).appendTo(newPtag);
+                var brTag = $("<br/>");
+                $(brTag).appendTo(newPtag);
+
+                var H4tag = $("<h5>");
+                $(H4tag).css("line-height", "1.0");
+                $(H4tag).css("margin", "0px");
+                $(H4tag).css("padding", "0px");
+                $(H4tag).text(address);
+                $(H4tag).appendTo(newPtag);
+                var brTag = $("<br/>");
+                $(brTag).appendTo(newPtag);
+
+                H4tag = $("<h5>");
+                $(H4tag).css("line-height", "1.0");
+                $(H4tag).css("margin", "0px");
+                $(H4tag).css("padding", "0px");
+                var line3str = "start = " + moment(mfStack[i].startTime_utc).format("h:mm a");
+                line3str += " finish = " + moment.unix(mfStack[i].finishTime_ts).format("h:mm a");
+                $(H4tag).text(line3str);
+                $(H4tag).appendTo(newPtag);
+                var brTag = $("<br/>");
+                $(brTag).css("line-height", "2px");
+                $(brTag).appendTo(newPtag);
+
+
+                var brTag = $("<br/>");
+                $(brTag).appendTo(newPtag);
+                $(newPtag).appendTo(newRow);
+            };
+
+            $(newRow).appendTo(divOutput);
+            newRow = $("<div>");
+            $(newRow).addClass("row");
+            newPtag = $("<p>");
+            HRtag = $("<hr>");
+            $(HRtag).appendTo(newPtag);
+            $(newPtag).appendTo(newRow);        //hor row
+            $(newPtag).appendTo(newRow);        //2nd hor row
+
+            //finish out the row
+            $(newRow).appendTo(divOutput);
+        };
+
+
         var outputShowTimes = function () {
             //outputs search to movies
             var divOutput = $("#movieOutput");
@@ -1118,7 +1323,10 @@
             var divOutput = $("#movieOutput");
             divOutput.html("");
             theaterObj.numMovieClickedIndex = parseInt(imgClicked);
+            //find all matches and put onto a moviesFound stack with movie_id, start_time, and cinema
             theaterObj.doMoviesFoundList();
+            modalWaitMovieTimes.style.display = "none";
+            outputMoviesByMovieTime();
         };
 
 
