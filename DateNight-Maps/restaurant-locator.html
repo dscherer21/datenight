@@ -8,45 +8,66 @@
     <style>
         /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
-
         #map {
             height: 100%;
+            width: 100%;
         }
 
         /* Optional: Makes the sample page fill the window. */
-
         html,
         body {
-            height: 100%;
+            height: 100%; 
             margin: 0;
             padding: 0;
+        }
+        /* CSS to resize Map Marker Icons */
+        .icon {
+            height: 10px;
+            width: 10px;
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
+
+        //Global Variables to define distance from theater, map and infowindow that pops up on user click function
 
         var configData = {
             theaterSearchDist: 2 * 1609.34,
             restaurantSearchDist: 2 * 1609.34
         }
 
-        // This example requires the Places library. Include the libraries=places
-        // parameter when you first load the API. For example:
-        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
         var map;
         var infowindow;
 
+        //Initial Function to Load Map
         function initMap(testTheater) {
-            //Using Coordinates for Music Box Theater
+            //Using Coordinates for Music Box Theater. 
             //This would be coordinates of theater pulled in from user selection
-            var testTheater = { lat: 41.9622, lng: -87.8095 };
+            var testTheater = { lat: 41.9499, lng: -87.6638 };
 
+            //Map Options
             map = new google.maps.Map(document.getElementById('map'), {
                 center: testTheater,
-                zoom: 16
+                zoom: 14
             });
 
+            //Add Theater Marker
+            var marker = new google.maps.Marker({
+                position: testTheater,
+                map:map
+            });
+
+            //Info Window for Theater Marker
+            var infoWindow = new google.maps.InfoWindow({
+                content:'<h1>Movie Theater</h2>'
+            });
+
+            //Event Listener for Theater Marker
+            marker.addListener('click', function (){
+                infoWindow.open(map, marker);
+            })
+
+            //Function to run Nearby Search
             infowindow = new google.maps.InfoWindow();
             var service = new google.maps.places.PlacesService(map);
             service.nearbySearch({
@@ -57,6 +78,7 @@
             }, callback);
         }
 
+        //For Loop to Create Markers for all Restaurants pulled in by Nearby Search
         function callback(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 for (var i = 0; i < results.length; i++) {
@@ -69,28 +91,33 @@
             var placeLoc = place.geometry.location;
             var marker = new google.maps.Marker({
                 map: map,
-                position: place.geometry.location
-            });
-
+                position: place.geometry.location,
+                icon: place.icon,
+                scaledSize: '[40, 40]'
+            },
+            );
 
             google.maps.event.addListener(marker, 'click', function () {
                 console.log(place);
 
-                // // Example queryURL for Google Place Details API
-                // var queryURL = "https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJW7xCCs7LD4gReyed0Lr_LaM&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
-                // // var queryURL = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + this.place_id + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+                var request = {
+                    placeId: place.place_id
+                };
+                console.log(request.placeId);
+                service = new google.maps.places.PlacesService(map);
+                service.getDetails(request, callback);
 
-                // $.ajax({
-                //     url: queryURL,
-                //     type: 'GET'
-                // })
-                // .then(function (response) {
-                //     console.log(response);
-                // });
+                function callback(place, status) {
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        createMarker(place);
+                        console.log(place);
+                        infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website + '">Website</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>' + '<p><strong>Phone: </strong>' + place.formatted_phone_number + '</p>' + '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</div>');
 
+                    }
+                }
 
-                infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + '<p><strong>Address: </strong>' + place.vicinity + '</p>' + '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</div>');
                 infowindow.open(map, this);
+
             });
         }
 
@@ -98,9 +125,13 @@
 </head>
 
 <body>
+    <!--Main Container for Map -->
     <div id="map"></div>
+
+    <!--Script tag to load Google Maps Javascript Library -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&libraries=places&callback=initMap"
         async defer></script>
+
 </body>
 
 </html>
