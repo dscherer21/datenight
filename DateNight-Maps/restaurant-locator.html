@@ -378,7 +378,7 @@
                         var directionsURL = 'https://www.google.com/maps/dir/?api=1&origin=' + testTheater.lat + ', ' + testTheater.lng + '&destination=' + place.formatted_address + '&travelmode=driving';
 
                         var urlString = '<div><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website; 
-                        urlString += '">Website</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>'; 
+                        urlString += '"target="_blank">Website</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>'; 
                         urlString += '<p><strong>Open Now: </strong>' + place.opening_hours.open_now + '</p>' + '<p><strong>Phone: </strong>' + place.formatted_phone_number + '</p>'; 
                         urlString += '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</p>';
                         urlString += '<strong><a href="' + directionsURL + '"target="_blank">Directions from Theater to Restaurant</a></stong>' + '</div>';
