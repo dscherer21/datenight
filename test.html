@@ -110,7 +110,8 @@
             <p>Please wait ...</p>
         </div>
     </div>
-    <!-- Searching for cinema address Modal -->
+  
+      <!-- Searching for cinema address Modal -->
     <div id="modMovieTimes" class="modal">
         <div class="modal-content">
             <span id="closeModMovieTimes" class="close">&times;</span>
@@ -138,8 +139,11 @@
                 //submit button was pushed
                 console.log("submit clicked");
                 event.preventDefault();
+                //already in 
+                /*
                 theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
                 theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
+                */
                 var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
                 theaterObj.searchDist = numeral(distInKM).format("+0000.0000");
 

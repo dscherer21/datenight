@@ -1186,9 +1186,12 @@ var getLocation =  function () {
 };
 
 var showPosition = function (position) {
-    $("#input-lat").val(numeral(position.coords.latitude).format("0000.000000"));
-    $("#input-lon").val(numeral(position.coords.longitude).format("0000.000000"));
-    $("#input-dist").val(numeral(configData.theaterSearchDist).format("0.0"));
+    //$("#input-lat").val(numeral(position.coords.latitude).format("0000.000000"));
+    //$("#input-lon").val(numeral(position.coords.longitude).format("0000.000000"));
+    //$("#input-dist").val(numeral(configData.theaterSearchDist).format("0.0"));
+
+    theaterObj.searchLat = numeral(position.coords.latitude).format("0000.000000");
+    theaterObj.sarchLon = numeral(position.coords.longitude).format("0000.000000");
     modalWaitLocation.style.display = "none";
 };
 
