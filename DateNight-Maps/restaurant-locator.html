@@ -8,24 +8,23 @@
     <style>
         /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
+
         #map {
             height: 100%;
             width: 100%;
         }
 
         /* Optional: Makes the sample page fill the window. */
+
         html,
         body {
-            height: 100%; 
+            height: 100%;
             margin: 0;
             padding: 0;
         }
-        /* CSS to resize Map Marker Icons */
-        .icon {
-            height: 10px;
-            width: 10px;
-        }
     </style>
+    <link rel="stylesheet" type="text/css" href="css/map-icons.css">
+    <script type="text/javascript" src="js/map-icons.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
 
@@ -38,32 +37,274 @@
 
         var map;
         var infowindow;
+        var testTheater;
 
         //Initial Function to Load Map
-        function initMap(testTheater) {
+        function initMap() {
             //Using Coordinates for Music Box Theater. 
             //This would be coordinates of theater pulled in from user selection
-            var testTheater = { lat: 41.9499, lng: -87.6638 };
+            testTheater = { lat: 41.9499, lng: -87.6638 };
 
             //Map Options
             map = new google.maps.Map(document.getElementById('map'), {
                 center: testTheater,
-                zoom: 14
+                zoom: 15,
+                //Custom Styles for Map Background
+                styles: [
+                    {
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#1d2c4d"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#8ec3b9"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#1a3646"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.country",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#4b6878"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.land_parcel",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#64779e"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.province",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#4b6878"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape.man_made",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#334e87"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape.natural",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#023e58"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#283d6a"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#6f9ba5"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#1d2c4d"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.park",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#023e58"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.park",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#3C7680"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#304a7d"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#98a5be"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#1d2c4d"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#2c6675"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#255763"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#b0d5ce"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#023e58"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#98a5be"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#1d2c4d"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.line",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#283d6a"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#3a4762"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#0e1626"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#4e6d70"
+                            }
+                        ]
+                    }
+                ]
             });
 
             //Add Theater Marker
-            var marker = new google.maps.Marker({
+            var theaterIcon = {
+                //Variable to add in Custom Image of Movie theater
+                url: "images/movie.png", // url
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+                origin: new google.maps.Point(0, 0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            }; var marker = new google.maps.Marker({
                 position: testTheater,
-                map:map
+                map: map,
+                icon: theaterIcon
             });
 
             //Info Window for Theater Marker
             var infoWindow = new google.maps.InfoWindow({
-                content:'<h1>Movie Theater</h2>'
+                content: '<h2>Movie Theater</h2>'
             });
 
             //Event Listener for Theater Marker
-            marker.addListener('click', function (){
+            marker.addListener('click', function () {
                 infoWindow.open(map, marker);
             })
 
@@ -87,18 +328,26 @@
             }
         }
 
+        //Add Markers for all Restaurants pulled in on Nearby Search
         function createMarker(place) {
+            //Variable to Define and Resize Icon Image based on Google Places Type, e.g. restaurant
+            var icon = {
+                url: "images/plate.png", // url
+                scaledSize: new google.maps.Size(30, 30), // scaled size
+                origin: new google.maps.Point(0, 0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            };
             var placeLoc = place.geometry.location;
+            //Function to Add Marker
             var marker = new google.maps.Marker({
                 map: map,
                 position: place.geometry.location,
-                icon: place.icon,
-                scaledSize: '[40, 40]'
+                icon: icon,
             },
             );
 
             google.maps.event.addListener(marker, 'click', function () {
-                console.log(place);
+                // console.log(place);
 
                 var request = {
                     placeId: place.place_id
@@ -111,7 +360,27 @@
                     if (status == google.maps.places.PlacesServiceStatus.OK) {
                         createMarker(place);
                         console.log(place);
-                        infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website + '">Website</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>' + '<p><strong>Phone: </strong>' + place.formatted_phone_number + '</p>' + '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</div>');
+                        // If/Else Statement to assign plain text to price levels in place of numbers
+                        if (place.price_level === 1) {
+                            place.price_level = "Inexpensive";
+                        } else if (place.price_level === 2) {
+                            place.price_level = "Moderate";
+                        } else if (place.price_level === 3) {
+                            place.price_level = "Expensive";
+                        } else if (place.price_level === 4) {
+                            place.price_level = "Very Expensive";
+                        };
+
+                        //Variable Used to Define Directions from Movie Theater to Selected Restaurant
+                        var directionsURL = 'https://www.google.com/maps/dir/?api=1&origin=' + testTheater.lat + ', ' + testTheater.lng + '&destination=' + place.formatted_address + '&travelmode=driving';
+
+                        //Variable to more easily see all elements added to InfoWindow
+                        var urlString = '<div><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website;
+                        urlString += '"target="_blank">Website</a></strong>' + '   |   ' + '<strong><a href="' + directionsURL + '"target="_blank">Directions from Theater to Restaurant</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>';
+                        urlString += '<p><strong>Phone: </strong>' + place.formatted_phone_number + '</p>';
+                        urlString += '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</p>';
+                        urlString += '<p><strong>Open Now: </strong>' + place.opening_hours.open_now + '</p>' + '</div>';
+                        infowindow.setContent(urlString);
 
                     }
                 }
@@ -131,6 +400,8 @@
     <!--Script tag to load Google Maps Javascript Library -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&libraries=places&callback=initMap"
         async defer></script>
+    <!-- Script tag to load Map Style Template -->
+    <script src="https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&center=-33.9,151.14999999999998&zoom=12&format=png&maptype=roadmap&style=element:geometry%7Ccolor:0x1d2c4d&style=element:labels.text.fill%7Ccolor:0x8ec3b9&style=element:labels.text.stroke%7Ccolor:0x1a3646&style=feature:administrative.country%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:administrative.land_parcel%7Celement:labels.text.fill%7Ccolor:0x64779e&style=feature:administrative.province%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:landscape.man_made%7Celement:geometry.stroke%7Ccolor:0x334e87&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x023e58&style=feature:poi%7Celement:geometry%7Ccolor:0x283d6a&style=feature:poi%7Celement:labels.text.fill%7Ccolor:0x6f9ba5&style=feature:poi%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:poi.park%7Celement:geometry.fill%7Ccolor:0x023e58&style=feature:poi.park%7Celement:labels.text.fill%7Ccolor:0x3C7680&style=feature:road%7Celement:geometry%7Ccolor:0x304a7d&style=feature:road%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:road%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:road.highway%7Celement:geometry%7Ccolor:0x2c6675&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x255763&style=feature:road.highway%7Celement:labels.text.fill%7Ccolor:0xb0d5ce&style=feature:road.highway%7Celement:labels.text.stroke%7Ccolor:0x023e58&style=feature:transit%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:transit%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:transit.line%7Celement:geometry.fill%7Ccolor:0x283d6a&style=feature:transit.station%7Celement:geometry%7Ccolor:0x3a4762&style=feature:water%7Celement:geometry%7Ccolor:0x0e1626&style=feature:water%7Celement:labels.text.fill%7Ccolor:0x4e6d70&size=480x360"></script>
 
 </body>
 
