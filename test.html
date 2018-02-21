@@ -127,16 +127,13 @@
         var configData = {
             theaterSearchDist: 2, //2 miles search earea
             restaurantSearchDist: 2, //2 miles
-
         };
-
 
         var modalWaitSearch1 = document.getElementById('modSearch1'); //earch all records
         var modalWaitSearch2 = document.getElementById('modSearch2'); //search movies
         var modalWaitSearch3 = document.getElementById('modSearch3'); //search cinemas
         var modalWaitLocation = document.getElementById('modLocation'); //location
         var modalWaitMovieTimes = document.getElementById('modMovieTimes'); //movie times
-
 
 
         var dataSrch = "";
@@ -153,7 +150,6 @@
             EOR: ""            //place marker
         };
 
-
         var movieRecType = {  //this is what is stored for each movie
             title: "",
             rating: "",
@@ -166,6 +162,16 @@
             urlWebsite: "",
             urlTrailer: "",
             closestDist: 0
+        };
+
+        var movieFoundType = { //movies found
+            movie_id: "",
+            cinema_id: "",
+            startTime_utc: "",
+            startTime_ts: 0, //time stamp
+            distTravel: 0,
+            timeTravel: 0,
+            timeToLeave: 0,
         };
 
         var theaterFoundType = {  //this is for every theater that was found
@@ -218,6 +224,8 @@
 
             currTheaterFound: theaterFoundType,
 
+            currMovieFoundRec: movieFoundType,
+
             searchParam: {
                 //everything that stays fixed for search parameters
                 urlPart1: "https://api.internationalshowtimes.com/v4/",
@@ -241,12 +249,14 @@
             cinemaIDstack: [],     //to look up unique cinema ID's
             numCinemaConv: 0,       //which cinema ID converting
             numSearchConv: 0,      //storage for the loop going thru the conversion
+            numMovieClickedIndex: 0,
             searchLat: "",
             searchLon: "",
             searchDist: "",     //in kilometers
             movieIDvals: [],    //all the movie ID's
             movieStack: [],     //array of movieRecType, sorted by movie name
             genresStack: [],   //all the genres found
+            movieFoundStack: [], //all the movies found
 
 
             buildSearchStr: function (typeSearch, indexNum) {
@@ -678,6 +688,39 @@
                 };
             },
 
+            doMoviesFoundList: function() {
+                //will assemble all of the movies found and put them 
+                //into movieFoundStack, can sort by time
+                //first, clear the stack for movies found
+                var mfStack = theaterObj.movieFoundStack; //shorthand variable
+                var cfRec = theaterObj.currMovieFoundRec; //shorthand for curr record
+                for ( var i=0; i<mfStack.length; i++) {
+                    mfStack.pop();
+                };
+                //get shorthand for movie
+                var currMovieClicked = theaterObj.movieStack[theaterObj.numMovieClickedIndex];
+                var currMovieID = currMovieClicked.movie_id;
+                //now go thru all the original search records and find matches
+                //probably could use JS function like index of, but for good
+                //exercise, step thru manually
+                var tStack = theaterObj.theaterStack; //shorthand
+                var numOrigRecs = tStack.length;
+                for ( var i=0; i<numOrigRecs; i++ ) {
+                    searchMovieID = tStack[i].theaterRec.movie_id;
+                    if ( searchMovieID === currMovieID )  {
+                        //a match was found
+                        cfRec.movie_id = currMovieID;
+                        cfRec.cinema_id = tStack[i].theaterRec.cinema_id;
+                        cfRec.startTime_utc = tStack[i].theaterRec.start_at;
+                        cfRec.startTime_ts = moment( tStack[i].start_at ).unix();
+
+                        //now that the cfRec is filled, make a copy and pop to movieFoundStack
+                        var copyOfRec = jQuery.extend(true, {}, cfRec);
+                        mfStack.push(copyOfRec);
+                    };
+                };
+            },
+
             EOR: ""    //place keeper so don't have to worry about stupid commas
         };
 
@@ -1074,6 +1117,8 @@
             console.log("picture clicked " + imgClicked);
             var divOutput = $("#movieOutput");
             divOutput.html("");
+            theaterObj.numMovieClickedIndex = parseInt(imgClicked);
+            theaterObj.doMoviesFoundList();
         };
 
 
