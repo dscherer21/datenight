@@ -4,6 +4,7 @@
 var configData = {
     theaterSearchDist: 5, //2 miles search earea
     restaurantSearchDist: 2, //2 miles
+    dispRichOutput: false
 };
 
 var modalWaitSearch1 = document.getElementById('modSearch1'); //earch all records
@@ -448,8 +449,13 @@ var theaterObj = {   //main object for the whole theater
         } else {
             theaterObj.numCinemaConv = 0;
             modalWaitSearch3.style.display = "none";
-            outputMovies();
-            outputTheaters();
+            if ( configData.dispRichOutput === true )
+            {
+                outputMovies();
+                outputTheaters();
+            } else {
+                displayMovies();
+            };
             //theaterObj.doSearch(3, theaterObj.numSearchConv);
         };
     },
@@ -1116,7 +1122,7 @@ var outputShowTimes = function () {
     var numFound = mStack.length;
     for (var i = 0; i < numFound; i++) {
         //loop thru the entire stack
-        var stackPtr = th[i];
+        //var stackPtr = th[i];
 
         var newRow = $("<div>");
         $(newRow).addClass("row");
@@ -1194,6 +1200,10 @@ var showPosition = function (position) {
     theaterObj.searchLon = numeral(position.coords.longitude).format("0000.000000");
     theaterObj.searchDist = configData.theaterSearchDist;
     modalWaitLocation.style.display = "none";
+    if( configData.dispRichOutput != true ) {
+        //not test mode, but full versions
+        testSearch();
+    };
 };
 
 var evalPicClick = function () {
