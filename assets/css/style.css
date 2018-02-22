@@ -33,6 +33,18 @@ h1 {
     font-size: 62px;
 }
 
+#main1 {
+    display: initial;
+}
+
+#main2 {
+    display: none;
+}
+
+#main3 {
+    display: none;
+}
+
 #distance {
     color: black;
 }
