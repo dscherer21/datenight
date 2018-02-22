@@ -285,9 +285,13 @@ var initMap = function () {
     });
 
     //Info Window for Theater Marker
+
+    //Variable Used to Define Directions from Movie Theater to Selected Restaurant
+    var theaterDirectionsURL = 'https://www.google.com/maps/dir/?api=1&origin=' + theaterObj.searchLoc.lat + ', ' + theaterObj.searchLoc.long + '&destination=' + theaterObj.currTheaterDisp.address.geoLocLat + ', ' + theaterObj.currTheaterDisp.address.geoLocLong + '&travelmode=driving';
+
     var infoWindow = new google.maps.InfoWindow({
 
-        content: '<div><strong>' + theaterObj.currTheaterDisp.theaterName + '</strong><br>' + '<br>' + '<strong><a href="' + theaterObj.currTheaterDisp.url + '"target="_blank">Website</a></strong>'
+        content: '<div><p><strong>' + theaterObj.currTheaterDisp.theaterName + '</strong></p>' + '<br>' + '<strong><a href="' + theaterObj.currTheaterDisp.url + '"target="_blank">Website</a></strong>' + '<p>'+ '<strong><a href="' + theaterDirectionsURL + '"target="_blank">Directions to Theater</a></strong></div>'
     });
 
     //Event Listener for Theater Marker
