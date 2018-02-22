@@ -14,6 +14,8 @@ var modalWaitSearch3 = document.getElementById('modSearch3'); //search cinemas
 var modalWaitLocation = document.getElementById('modLocation'); //location
 var modalWaitMovieTimes = document.getElementById('modMovieTimes'); //movie times
 var modalMap = document.getElementById('modMap'); //map modal popup
+var closeModMap = document.getElementById("closeModMap");
+
 
 
 var dataSrch = "";
@@ -1250,13 +1252,28 @@ var showPosition = function (position) {
         theaterObj.searchLoc.dist = configData.theaterSearchDist;
         theaterObj.addrSearchStr = "";
     };
-
-    modalWaitLocation.style.display = "none";
-    if (configData.dispRichOutput != true) {
-        //not test mode, but full versions
-        testSearch();
-    };
+    //next step is to convert to a postal address
+    convertGeoToAddr();
 };
+
+var convertGeoToAddr = function () {
+    var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + theaterObj.searchLoc.lat + "," + theaterObj.searchLoc.long + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+
+    $.ajax({
+        url: userPositionToAddressURL,
+        method: "GET"
+    }).then(function (response) {
+        theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
+        //turn off wait location
+        modalWaitLocation.style.display = "none";
+        $("#citySearchZipSearch").text(theaterObj.searchLoc.addrSearchStr);
+        if (configData.dispRichOutput != true) {
+            //not test mode, but full versions
+            testSearch();
+        };
+    });
+};
+
 
 var evalPicClick = function () {
     //a picture got clicked
@@ -1390,4 +1407,14 @@ var restOpenTableObj = { //everything for OpenTable
         } while (continLoop === true);
     }
 };
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    //just mass close everything
+    //replace with Case statement  in future
+    if (event.target == modalMap) {
+        modalMap.style.display = "none";
+    }
+}
+
 
