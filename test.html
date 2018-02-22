@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Date Night</title>
-    <link rel="stylesheet" type="text/css" href="style_test.css">
+    <!-- <link rel="stylesheet" type="text/css" href="style_test.css">  -->
 
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  -->
 
@@ -27,6 +27,13 @@
 
     <!-- Bootstrap CDN-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/maps.css">
+    <link rel="stylesheet" type="text/css" src="assets/css/map-icons.css">
+    <link rel="stylesheet" href="assets/css/theater.css">
+
+
+    <script type="text/javascript" src="assets/javascript/map-icons.js"></script>
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="assets/javascript/moment.js"></script>
     <script src="assets/javascript/numeral.js"></script>
@@ -43,14 +50,13 @@
     <div class="wrapper">
         <div id="inputSect" style="margin:3px; padding:3px">
             <!--        <form id="user-form">   -->
-            <label for="number-input">Latitude</label>
-            <input type="number" id="input-lat">
-            <p></p>
-            <label for="number-input">Longitude</label>
-            <input type="number" id="input-lon">
+            <label for="number-input">Lat</label>
+            <input type="number" id="input-lat" style="display:inline; width:100px">
+            <label for="number-input">Long</label>
+            <input type="number" id="input-lon" style="display:inline; width:100px">
             <p></p>
             <label for="number-input">Distance</label>
-            <input type="number" id="input-dist">
+            <input type="number" id="input-dist" style="display:inline;" >
             <p></p>
             <!-- Button triggers new movie to be added -->
             <input id="bttnUserInput" type="submit" value="Submit">
@@ -110,8 +116,8 @@
             <p>Please wait ...</p>
         </div>
     </div>
-  
-      <!-- Searching for cinema address Modal -->
+
+    <!-- Searching for cinema address Modal -->
     <div id="modMovieTimes" class="modal">
         <div class="modal-content">
             <span id="closeModMovieTimes" class="close">&times;</span>
@@ -122,30 +128,56 @@
             <p>Please wait ...</p>
         </div>
     </div>
+    <!-- test elements for maps -->
+    
+    <div class="container-fluid" id="container-map">
+        <div class="row" style="height:700px; width:400px">
+            <div id="map"></div>
+        </div>
+    </div>
 
+<!--
+    <div id="modMap" class="modal" style="height:700px; width:400px;">
+        <div class="modal-content">
+            <span id="closeModMovieTimes" class="close">&times;</span>
+            <div id="map"></div>
+        </div>
+    </div>
+-->
 
 
     <script src="assets/javascript/moviesearch.js"></script>
+    <script src="assets/javascript/restlocat.js"></script>
+
+    <!--Script tag to load Google Maps Javascript Library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&libraries=places&callback=initMap"
+        async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&center=-33.9,151.14999999999998&zoom=12&format=png&maptype=roadmap&style=element:geometry%7Ccolor:0x1d2c4d&style=element:labels.text.fill%7Ccolor:0x8ec3b9&style=element:labels.text.stroke%7Ccolor:0x1a3646&style=feature:administrative.country%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:administrative.land_parcel%7Celement:labels.text.fill%7Ccolor:0x64779e&style=feature:administrative.province%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:landscape.man_made%7Celement:geometry.stroke%7Ccolor:0x334e87&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x023e58&style=feature:poi%7Celement:geometry%7Ccolor:0x283d6a&style=feature:poi%7Celement:labels.text.fill%7Ccolor:0x6f9ba5&style=feature:poi%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:poi.park%7Celement:geometry.fill%7Ccolor:0x023e58&style=feature:poi.park%7Celement:labels.text.fill%7Ccolor:0x3C7680&style=feature:road%7Celement:geometry%7Ccolor:0x304a7d&style=feature:road%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:road%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:road.highway%7Celement:geometry%7Ccolor:0x2c6675&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x255763&style=feature:road.highway%7Celement:labels.text.fill%7Ccolor:0xb0d5ce&style=feature:road.highway%7Celement:labels.text.stroke%7Ccolor:0x023e58&style=feature:transit%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:transit%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:transit.line%7Celement:geometry.fill%7Ccolor:0x283d6a&style=feature:transit.station%7Celement:geometry%7Ccolor:0x3a4762&style=feature:water%7Celement:geometry%7Ccolor:0x0e1626&style=feature:water%7Celement:labels.text.fill%7Ccolor:0x4e6d70&size=480x360"></script>
+
+
+
 
     <script>
 
         $(document).ready(function () {
+            configData.dispRichOutput = true;
             getLocation();
 
             //add click listener to all movie pics
             $(document.body).on("click", ".movie-pic", evalPicClick);
+            $(document.body).on("click", ".click-theater", evalTheaterClick);
 
             $("#bttnUserInput").on("click", function (event) {
                 //submit button was pushed
                 console.log("submit clicked");
                 event.preventDefault();
                 //already in 
-                /*
-                theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
-                theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
-                */
-                var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
-                theaterObj.searchDist = numeral(distInKM).format("+0000.0000");
+                if (configData.dispRichOutput === true) {
+                    theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
+                    theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
+                    var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
+                    theaterObj.searchDist = numeral(distInKM).format("+0000.0000");
+                };
 
                 if (theaterObj.searchLat === "+0000.000000" || theaterObj.searchLon === "+0000.000000") {
                     //left blank, so put in Evanston as default
@@ -155,6 +187,8 @@
                 };
 
                 //for modal popups
+                document.getElementById("container-map").style.display = "block";
+
                 testSearch();
             });
         });
