@@ -33,6 +33,10 @@ h1 {
     font-size: 62px;
 }
 
+#distance {
+    color: black;
+}
+
 label {
     font-size: 22px;
 }
@@ -58,7 +62,7 @@ form {
     border: 1px solid black;
     margin: 2px;
     padding: 5px;
-    background-color: white;
+    background-image: linear-gradient(180deg, grey, silver, grey);
     color: black;
 }
 
@@ -135,6 +139,15 @@ h3 {
 
 .multi-item-carousel.carousel-inner>.item {
     transition: 500ms ease-in-out left;
+}
+
+
+@media screen and (max-width: 768px) {
+
+    #navIcon {
+      width: 90%;
+    }
+
 }
 
 /*Adding styles to fix header overlap on smaller screens*/
