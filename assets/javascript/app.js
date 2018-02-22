@@ -1,18 +1,19 @@
 $( document ).ready(function() {
     console.log( "ready!" );
+
+/* Set the width of the side navigation to 250px */
+$(document.body).on('click', '#navIcon', function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    console.log('Slider Button Clicked');
+});
+
+/* Set the width of the side navigation to 0 */
+$('.closebtn').on('click', function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+});
+
     getLocation();
     console.log(theaterObj);
-
-    /* Set the width of the side navigation to 250px */
-     $(document.body).on('click', '#navIcon', function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-        console.log('Slider Button Clicked');
-    });
-
-    /* Set the width of the side navigation to 0 */
-    $('.closebtn').on('click', function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-    });
 
 
 
@@ -37,7 +38,7 @@ var displayMovies = function() {
         var movieCardBlock = $('<div class="card-block">');
         var movieCardBlockTitle = $('<h4>' + movieTitle + '</h4>');
         var checkboxForm = $('<div class="form-check">');
-        var checkbox = $('<input type="checkbox" class="form-check-input" id="movieCheck">');
+        var checkbox = $('<input type="checkbox" class="form-check-input" id="movieCheck" data-movie-index="' + i + '">');
         var checkboxLabel = $('<label class="form-check-label" for="movieCheck"> I choose you!</label>');
         var trailerButton = $('<a href="' + movieTrailer + '" target="_blank" class="btn btn-primary">Watch Movie Trailer</a>');
         $(checkbox).appendTo(checkboxForm);
@@ -76,3 +77,20 @@ $('.multi-item-carousel').carousel({
   });
 
 };
+
+//when the Search Movie Theaters Button is Clicked...
+$('#getStarted').on('click', function() {
+    theaterObj.addrSearchStr = $('#cityZipSearch').val;
+    theaterObj.searchLoc.dist = $('#distance').val;  
+    console.log(theaterObj.addrSearchStr);
+    console.log(theaterObj.searchLoc.dist);
+});
+
+
+
+
+//when the Search Movie Theaters Button is Clicked...
+$('#movieSearch').on('click', function() {
+    $("input:checked").attr("data-movie-index");
+    
+});

@@ -17,6 +17,8 @@
         <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <!--JQuery Link Tag-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!--Bootstrap 3 JS Link-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="assets/javascript/moment.js"></script>
         <script src="assets/javascript/numeral.js"></script>
     </head>
@@ -28,14 +30,15 @@
         <!--Slide-out Navbar-->
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn">&times;</a>
-            <a href="#">Theater Radius</a>
-            <a href="#">Restaurant Radius</a>
+            <hr>
+            <hr>
             <hr>
             <h3>Contributors</h3>
             <a href='https://dscherer21.github.io/bootstrap-portfolio/' target='_blank'>David</a>
             <a href='https://peterlgustafson.github.io/Responsive-Portfolio/' target='_blank'>Peter</a>
             <a href='https://richbu.github.io/Bio/' target='_blank'>Rich</a>
         </div>
+
         <!--Header-->
         <header class="">
             <div class="navbar navbar-relative-top container-fluid">
@@ -51,7 +54,25 @@
               <h2>Welcome to <span class="specialFont">DateNight</span>!</h2>
               <h3>The website that makes your date night more convenient.</h3>
               <p>Let's assume that you and your "SO (aka Significant Other)" would like to go out for a date night, however, you have to continually switch back and forth between websites looking at showtimes and trying to find a place to eat beforehand. Well, that's where <span class="specialFont">DateNight</span> comes in! We take your location, movie you're interested in seeing, and type of food you are looking for, and show you theaters that are showing your movie, a list of restaurants near the theater that serve the type of food you chose, all within the distance to your location that you specified. Sounds Convenient to you, and you are ready to get started? Then click the button below.</p>
-              <a href="searchpage.html"><button class="btn btn-primary">Let's Get Started</button></a>
+              <!--Zip or city and State search form-->
+              <form>
+                    <div class="form-group">
+                        <label for="cityZipSearch">Please enter your City and State or Zip Code:</label>
+                        <input type="City,ST or Zipcode" class="form-control" id="cityZipSearch" placeholder="City,ST or Zip">
+                    </div>
+                </form>
+                <!--Zip or city and State search form-->
+              <form>
+                    <div class="form-group">
+                        <label for="cityZipSearch">Distance you are willing to travel:</label>
+                        <select id="distance">
+                            <option value="5" default="default">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </div>
+                </form>
+                <a href="searchpage.html"><button class="btn btn-primary" id='getStarted'>Let's Get Started</button></a>
             </div>
 
         </main>
