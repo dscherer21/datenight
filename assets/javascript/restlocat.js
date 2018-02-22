@@ -291,7 +291,7 @@ var initMap = function () {
 
     var infoWindow = new google.maps.InfoWindow({
 
-        content: '<div><p><strong>' + theaterObj.currTheaterDisp.theaterName + '</strong></p>' + '<br>' + '<strong><a href="' + theaterObj.currTheaterDisp.url + '"target="_blank">Website</a></strong>' + '<p>'+ '<strong><a href="' + theaterDirectionsURL + '"target="_blank">Directions to Theater</a></strong></div>'
+        content: '<div><p><strong>' + theaterObj.currTheaterDisp.theaterName + '</strong></p>' + '<br>' + '<p><strong><a href="' + theaterObj.currTheaterDisp.url + '"target="_blank">Website</a></strong></p>' + '<p><strong><a href="' + theaterDirectionsURL + '"target="_blank">Directions to Theater</a></strong></p></div>'
     });
 
     //Event Listener for Theater Marker
