@@ -11,6 +11,17 @@ body {
     font-size: 28px;
 }
 
+.modal {
+  top: 200px;
+  width: 70%;
+  left: 20%;
+  text-align: center;
+}
+
+.modal-content {
+  background-color: rgba(66, 1, 13, 1);
+}
+
 header {
     background-color: rgba(66, 1, 13, 1);
     background-size: cover;
@@ -38,10 +49,17 @@ form {
     border-color: rgba(255,255,255,0);
 }
 
-.carousel-item {
+#navIcon {
+  width: 50%;
+}
+
+.card {
+    display: inline-block;
+    border: 1px solid black;
+    margin: 2px;
+    padding: 5px;
     background-color: white;
     color: black;
-    padding: 5px;
 }
 
 .navbar-fixed-bottom {
@@ -102,12 +120,21 @@ hr {
     margin-right: 50px;
 }
 
-#navIcon {
-   
+.carousel-item {
+    display: inline-block;
+    border: 1px solid black;
 }
 
 h3 {
     margin-left: 10px;
+}
+
+.carousel-inner {
+    padding: 10px;
+}
+
+.multi-item-carousel.carousel-inner>.item {
+    transition: 500ms ease-in-out left;
 }
 
 /*Adding styles to fix header overlap on smaller screens*/
@@ -116,7 +143,11 @@ h3 {
     h1 {
         font-size: 42px;
     }
-    
+
+    #navIcon {
+      width: 200%;
+    }
+
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
