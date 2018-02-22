@@ -1266,10 +1266,6 @@ var convertGeoToAddr = function () {
         //turn off wait location
         modalWaitLocation.style.display = "none";
         $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
-        if (configData.dispRichOutput === true) {
-            //not test mode, but full versions
-            testSearch();
-        };
     });
 };
 
@@ -1319,10 +1315,9 @@ var evalTheaterClick = function () {
     ctRec.address.zipCode = currCinemaRec.address.zipCode;
 
     if (configData.dispRichOutput == true) {
-        modalMap.style.display = "block";
+        displayMap( true );
         //document.getElementById("container-map").style.display = "block";
         // popup is shown and map is not visible
-        initMap();
         //google.maps.event.trigger(map, 'resize');
     };
 
@@ -1406,6 +1401,18 @@ var restOpenTableObj = { //everything for OpenTable
         } while (continLoop === true);
     }
 };
+
+var displayMap = function ( dispOn ) {
+    //display the map if the dispOn is on
+    if ( dispOn === true ) {
+        modalMap.style.display = "block";
+        initMap();
+    } else {
+        modalMap.style.display = "none";
+    };
+};
+
+
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
