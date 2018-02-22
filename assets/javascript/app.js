@@ -1,25 +1,3 @@
-$( document ).ready(function() {
-    console.log( "ready!" );
-
-/* Set the width of the side navigation to 250px */
-$(document.body).on('click', '#navIcon', function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
-    console.log('Slider Button Clicked');
-});
-
-/* Set the width of the side navigation to 0 */
-$('.closebtn').on('click', function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-});
-
-    getLocation();
-    console.log(theaterObj);
-
-
-
-});
-
-
 
 
 var displayMovies = function() {
@@ -54,6 +32,30 @@ var displayMovies = function() {
         }
         $(movieCardActive).appendTo(movieDiv);
     };
+
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+
+/* Set the width of the side navigation to 250px */
+$(document.body).on('click', '#navIcon', function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    console.log('Slider Button Clicked');
+});
+
+/* Set the width of the side navigation to 0 */
+$('.closebtn').on('click', function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+});
+
+    //getLocation();
+    //console.log(theaterObj);
+
+
+
+});
+
+
 
     // Instantiate the Bootstrap carousel
 $('.multi-item-carousel').carousel({

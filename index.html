@@ -30,7 +30,7 @@
 
 <body>
     <script src="assets/javascript/restlocat.js"></script>
-    <!--script src="assets/javascript/moviesearch.js"></script-->
+    <script src="assets/javascript/moviesearch.js"></script>
     <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -43,6 +43,54 @@
             <p>Please allow location privelege and then wait</p>
         </div>
     </div>
+    <!-- Searching for all movie entries Modal -->
+    <div id="modSearch1" class="modal">
+        <div class="modal-content">
+            <span id="closeModSearch1" class="close">&times;</span>
+            <h2>
+                <p>Searching for all theaters and movies within search area</p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
+    <!-- Searching for all movie entries Modal -->
+    <div id="modSearch2" class="modal">
+        <div class="modal-content">
+            <span id="closeModSearch2" class="close">&times;</span>
+            <h2>
+                <p>Searching for all movie data </p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
+    <!-- Searching for cinema address Modal -->
+    <div id="modSearch3" class="modal">
+        <div class="modal-content">
+            <span id="closeModSearch3" class="close">&times;</span>
+            <h2>
+                <p>Searching for addresses </p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
+
+    <!-- Searching for cinema address Modal -->
+    <div id="modMovieTimes" class="modal">
+        <div class="modal-content">
+            <span id="closeModMovieTimes" class="close">&times;</span>
+            <h2>
+                <p>Getting movie times</p>
+            </h2>
+            <p> </p>
+            <p>Please wait ...</p>
+        </div>
+    </div>
+    <script src="assets/javascript/restlocat.js"></script>
+    <script src="assets/javascript/moviesearch.js"></script>
+
     <!--Slide-out Navbar-->
     <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn">&times;</a>
@@ -121,6 +169,11 @@
     </footer>
     <!--External JavaScript Link-->
     <script src="assets/javascript/app.js"></script>
+    <script>
+        $( document ).ready(function() {
+        testSearch();
+        });
+    </script>
 </body>
 
 </html>

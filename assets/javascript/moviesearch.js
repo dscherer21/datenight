@@ -17,7 +17,6 @@ var modalMap = document.getElementById('modMap'); //map modal popup
 var closeModMap = document.getElementById("closeModMap");
 
 
-
 var dataSrch = "";
 var dataSrchDone = false;
 var dataTheaterSearch;
@@ -1266,8 +1265,8 @@ var convertGeoToAddr = function () {
         theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
         //turn off wait location
         modalWaitLocation.style.display = "none";
-        $("#citySearchZipSearch").text(theaterObj.searchLoc.addrSearchStr);
-        if (configData.dispRichOutput != true) {
+        $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+        if (configData.dispRichOutput === true) {
             //not test mode, but full versions
             testSearch();
         };
