@@ -1,0 +1,148 @@
+
+/*  style.css  by Rich Budek 01/26/2018       */
+/*             to go with Bootstrap-Portfolio */
+
+.navbar-default {
+    background-color: #FFFFFF;
+    border-color: #c3c3c3;
+}
+
+.navbar-default .navbar-brand {
+    color: #FFFFFF;
+    background-color: #36A19A;
+    font-weight: bold;
+    font-size: 18pt;
+}
+
+.bigButton {
+    margin: 0px 5px 0px 5px;
+    /* width: 80px;
+    height: 80px;
+    */
+}
+
+.min-pad-info {
+    /* min padding on the sides */
+    padding: 3px 5px 3px 5px;
+}
+
+.footer {
+    text-align: center;
+    color: #36A194;
+}
+
+.guessDispBox {
+    width: 85%;
+    font-family: Courier New, Courier, monospace;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+
+.panelMinPadding {
+    /* use on outside panel wrapper */
+    padding: 0px 0px 0px 3px !important;
+    margin: 0 !important;
+    width: 75px;
+}
+
+.panelMinMargin {
+    margin: 0px 3px 3px 0px !important;
+    width: 75px;
+    float: left;
+    color:;
+}
+
+.boxMessageInput {
+    /* min-width: 100%; */
+}
+
+
+/* size up all glyphicons right now, later on target only the ones I want */
+.gl-1-5x {  font-size: 1.5em; }
+.gl-2x {  font-size: 2em; }
+.gl-3x {  font-size: 3em; }
+.gl-4x {  font-size: 4em; }
+.gl-5x {  font-size: 5em; }
+
+
+#navBarContainer {
+    /* don't know if want to fix width at the moment */
+    /* max-width: 960px; */   
+}
+
+/* class for main container */
+.container-fluid {
+    max-width: 960px;
+}
+
+aside {
+    width: 270px;
+}
+
+article {
+    width: 650px;
+}
+
+h1  {
+    color: #36A19A;
+    /* color: #0096AF;  */
+    /* background-color: aqua; */
+}
+
+h3  {
+    color: #36A19A;
+    /* color: #0096AF;  */
+    /* background-color: aqua; */
+}
+
+
+.panel-title {
+    color: #36A19A;
+    background-color: #FFFFFF;
+}
+
+
+.panel-default > .panel-heading {
+    background-image: none;
+    color: #36A19A;
+    background-color: #FFFFFF;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

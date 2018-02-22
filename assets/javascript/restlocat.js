@@ -25,7 +25,7 @@ var infowindow;
 var testTheater = { lat: 41.9499, lng: -87.6638 };
 
 //Initial Function to Load Map
-function initMap() {
+var initMap = function ()  {
     //Using Coordinates for Music Box Theater. 
     //This would be coordinates of theater pulled in from user selection
     //testTheater = { lat: 41.9499, lng: -87.6638 };

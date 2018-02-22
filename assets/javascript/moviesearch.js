@@ -13,7 +13,7 @@ var modalWaitSearch2 = document.getElementById('modSearch2'); //search movies
 var modalWaitSearch3 = document.getElementById('modSearch3'); //search cinemas
 var modalWaitLocation = document.getElementById('modLocation'); //location
 var modalWaitMovieTimes = document.getElementById('modMovieTimes'); //movie times
-//var modalMap = document.getElementById('modMap'); //map modal popup
+var modalMap = document.getElementById('modMap'); //map modal popup
 
 
 var dataSrch = "";
@@ -127,6 +127,12 @@ var theaterObj = {   //main object for the whole theater
     },
 
     //variables are here
+    searchLoc: {
+        lat: 0.0,
+        long: 0.0,
+        dist: 0.0,
+        addrSearchStr: "",
+    };
     theaterStack: [],      //array of theaters  --- treat as stack
     theatersFoundStack: [],  //all the theaters found
     cinemaIDstack: [],     //to look up unique cinema ID's
@@ -152,7 +158,7 @@ var theaterObj = {   //main object for the whole theater
         timeFromStr = moment().utc().format();
         timeToStr = moment().add(12, "hours").utc().format();
         if (typeSearch == 1) {
-            outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.qryGeoLocation + theaterObj.searchLat + "," + theaterObj.searchLon + SP.qryDistance + theaterObj.searchDist;
+            outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.qryGeoLocation + theaterObj.searchLoc.lat + "," + theaterObj.searchLoc.long + SP.qryDistance + theaterObj.searchLoc.dist;
             //outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.urlCountry + SP.urlBoundGeo;
             outString += SP.qryTimeFrom + timeFromStr + SP.qryTimeTo + timeToStr;
             console.log(outString);
@@ -660,7 +666,8 @@ var theaterObj = {   //main object for the whole theater
 var testSearch = function () {
     theaterObj.clearStack();
     if (configData.dispRichOutput == true) {
-        document.getElementById("container-map").style.display = "none";
+        modalMap.style.display = "none";
+        //document.getElementById("container-map").style.display = "none";
     };
 
     modalWaitSearch1.style.display = "block";
@@ -1222,7 +1229,8 @@ var getLocation = function () {
         alert("Geolocation is not supported by this browser.");
     };
     if (configData.dispRichOutput === true) {
-        document.getElementById("container-map").style.display = "none";
+        modalMap.style.display = "none";
+        //document.getElementById("container-map").style.display = "none";
     };
 };
 
@@ -1231,13 +1239,15 @@ var showPosition = function (position) {
         $("#input-lat").val(numeral(position.coords.latitude).format("0000.000000"));
         $("#input-lon").val(numeral(position.coords.longitude).format("0000.000000"));
         $("#input-dist").val(numeral(configData.theaterSearchDist).format("0.0"));
-        theaterObj.searchLat = numeral(position.coords.latitude).format("0000.000000");
-        theaterObj.searchLon = numeral(position.coords.longitude).format("0000.000000");
-        theaterObj.searchDist = configData.theaterSearchDist;
+        theaterObj.searchLoc.lat = numeral(position.coords.latitude).format("0000.000000");
+        theaterObj.searchLoc.long = numeral(position.coords.longitude).format("0000.000000");
+        theaterObj.searchLoc.dist = configData.theaterSearchDist;
+        theaterObj.addrSearchStr = "";
     } else {
-        theaterObj.searchLat = numeral(position.coords.latitude).format("0000.000000");
-        theaterObj.searchLon = numeral(position.coords.longitude).format("0000.000000");
-        theaterObj.searchDist = configData.theaterSearchDist;
+        theaterObj.searchLoc.lat = numeral(position.coords.latitude).format("0000.000000");
+        theaterObj.searchLoc.long = numeral(position.coords.longitude).format("0000.000000");
+        theaterObj.searchLoc.dist = configData.theaterSearchDist;
+        theaterObj.addrSearchStr = "";
     };
 
     modalWaitLocation.style.display = "none";
@@ -1292,10 +1302,11 @@ var evalTheaterClick = function () {
     ctRec.address.zipCode = currCinemaRec.address.zipCode;
 
     if (configData.dispRichOutput == true) {
-        document.getElementById("container-map").style.display = "block";
+        modalMap.style.display = "block";
+        //document.getElementById("container-map").style.display = "block";
         // popup is shown and map is not visible
-        google.maps.event.trigger(map, 'resize');
         initMap();
+        //google.maps.event.trigger(map, 'resize');
     };
 
     console.log("(" + numeral(geoLat).format("+0000.000000") + "," + numeral(geoLong).format("+0000.000000") + ")");
