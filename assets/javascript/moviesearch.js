@@ -131,8 +131,9 @@ var theaterObj = {   //main object for the whole theater
         lat: 0.0,
         long: 0.0,
         dist: 0.0,
-        addrSearchStr: "",
-    };
+        addrSearchStr: ""
+    },
+
     theaterStack: [],      //array of theaters  --- treat as stack
     theatersFoundStack: [],  //all the theaters found
     cinemaIDstack: [],     //to look up unique cinema ID's
