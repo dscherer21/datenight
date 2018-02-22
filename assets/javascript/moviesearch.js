@@ -683,7 +683,7 @@ var testSearch = function () {
         theaterObj.cinemaIDstack.pop();
     };
 
-    theaterObj.searchDist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
+    theaterObj.searchLoc.dist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
     theaterObj.doSearchInitial();
     console.log("data search done = " + dataSrchDone);
     console.log("waiting for a return");
