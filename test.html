@@ -192,7 +192,7 @@
                     //left blank, so put in Evanston as default
                     theaterObj.searchLat = numeral(42.048995).format("+0000.000000");
                     theaterObj.searchLon = numeral(-87.684505).format("+0000.000000");
-                    theaterObj.searchDist = numeral(6.00).format("+0000.0000");
+                    theaterObj.searchDist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
                 };
 
                 //for modal popups
