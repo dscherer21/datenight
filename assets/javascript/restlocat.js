@@ -25,14 +25,14 @@ var infowindow;
 var testTheater = { lat: 41.9499, lng: -87.6638 };
 
 //Initial Function to Load Map
-var initMap = function ()  {
+var initMap = function () {
     //Using Coordinates for Music Box Theater. 
     //This would be coordinates of theater pulled in from user selection
     //testTheater = { lat: 41.9499, lng: -87.6638 };
 
     //Map Options
     map = new google.maps.Map(document.getElementById('map'), {
-        
+
         center: testTheater,
         zoom: 15,
         //Custom Styles for Map Background
@@ -359,15 +359,23 @@ var initMap = function ()  {
                         place.price_level = "Very Expensive";
                     };
 
+                    //If Else Statement to Assign new Value for Open or Closed Now in infoWindow
+                    if (place.opening_hours.open_now === true) {
+                        place.opening_hours.open_now = "Open Now"
+                    } else {
+                        place.opening_hours.open_now = "Closed Now"
+                    };
+
                     //Variable Used to Define Directions from Movie Theater to Selected Restaurant
                     var directionsURL = 'https://www.google.com/maps/dir/?api=1&origin=' + testTheater.lat + ', ' + testTheater.lng + '&destination=' + place.formatted_address + '&travelmode=driving';
 
                     //Variable to more easily see all elements added to InfoWindow
                     var urlString = '<div><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website;
-                    urlString += '"target="_blank">Website</a></strong>' + '   |   ' + '<strong><a href="' + directionsURL + '"target="_blank">Directions from Theater to Restaurant</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>';
+                    urlString += '"target="_blank">Website</a></strong>' + '   |   ' + '<strong><a href="' + directionsURL + '"target="_blank">Directions to Restaurant from Theater</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>';
                     urlString += '<p><strong>Phone: </strong>' + place.formatted_phone_number + '</p>';
                     urlString += '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</p>';
-                    urlString += '<p><strong>Open Now: </strong>' + place.opening_hours.open_now + '</p>' + '</div>';
+                    urlString += '<p><strong>Hours: </strong>' + place.opening_hours.weekday_text + '</p>';
+                    urlString += '<p><strong>' + place.opening_hours.open_now + '</strong></p>' + '</div>';
                     infowindow.setContent(urlString);
 
                 }
