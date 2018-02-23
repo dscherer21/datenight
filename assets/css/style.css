@@ -49,11 +49,13 @@ hr {
     background-size: cover;
     box-shadow: 12px 12px 12px 1px rgba(255,255,255,.2);
     border: none;
+    border-radius: 0;
 }
 
 .modal {
     top: 30%;
-    width: 70%;
+    width: 50%;
+    height: 47%;
     left: 20%;
     text-align: center;
 }
