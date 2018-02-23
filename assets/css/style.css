@@ -101,9 +101,10 @@ hr {
     font-family: 'Lobster', cursive;
   }
   
-  .panel {
-      margin: 10px;
-  }
+.panel {
+    margin: 10px;
+    box-shadow: 12px 12px 12px 1px rgba(255,255,255,.2);
+}
   
   .panel-body {
       color: black;
