@@ -6,7 +6,8 @@ var configData = {
     //    restaurantSearchDist: 2, //2 miles
     restaurantSearchDist: 2 * 1609.34,  //because google is in meters
     dispRichOutput: false,
-    dispRichTestFalseGPS: true   //punch in known values for GPS
+    dispRichTestFalseGPS: false,   //punch in known values for GPS
+    keyAPIgoogle:  "AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk"
 };
 
 var modalWaitSearch1 = document.getElementById('modSearch1'); //earch all records
@@ -753,7 +754,7 @@ var theaterObj = {   //main object for the whole theater
                     //it matches so append to movie times
                     console.log("pushing to stack");
                     tmStack[numTM].movieTimes.push(mfStack[i].startTime_utc);
-                    tmStack[numTM].movieTimesStr += "  " + moment(mfStack[i].startTime_utc).format("h:mma");
+                    tmStack[numTM].movieTimesStr += " geo " + moment(mfStack[i].startTime_utc).format("h:mma");
                     continLoop = false;
                 } else {
                     //doesn't match, check if it is the end
@@ -1404,7 +1405,10 @@ var showPosition = function (position) {
 };
 
 var convertGeoToAddr = function () {
-    var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + theaterObj.searchLoc.lat + "," + theaterObj.searchLoc.long + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+    var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    userPositionToAddressURL +=  numeral(theaterObj.searchLoc.lat).format("+0000.000000");
+    userPositionToAddressURL +=  "," + numeral(theaterObj.searchLoc.long).format("+0000.000000");
+    userPositionToAddressURL += "&key=" + configData.keyAPIgoogle;
 
     $.ajax({
         url: userPositionToAddressURL,
@@ -1471,26 +1475,27 @@ var checkAndConvertAddrToGeo = function () {
             doneConvertAddrToGeo();
         } else {
             //needs new geo location based on address and NOT in test mode
-            var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + theaterObj.searchLoc.lat + "," + theaterObj.searchLoc.long + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+            var userAddrToGeoURL = "https://maps.googleapis.com/maps/api/geocode/json?address=" + pageAddrStr + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
             $.ajax({
-                url: userPositionToAddressURL,
+                url: userAddrToGeoURL,
                 method: "GET"
             }).then(function (response) {
                 //got the geo location
-                var locLatIn = "";
-                var locLongIn = "";
+                var locLatIn = response.results[0].geometry.location.lat;
+                var locLongIn = response.results[0].geometry.location.lng;
                 theaterObj.searchLoc.lat = numeral(locLatIn).format("+0000.000000");
                 theaterObj.searchLoc.long = numeral(locLongIn).format("+0000.000000");
+                theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
 
-                //theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
-                //turn off wait location
-                modalWaitLocation.style.display = "none";
+                console.log("Geo location = ");
+                console.log( response );
                 if (configData.dispRichOutput != true) {
                     $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
                 } else {
                     $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
                     $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
                 };
+                modalWaitLocation.style.display = "none";
                 doneConvertAddrToGeo();
             });
         }
