@@ -702,28 +702,81 @@ var theaterObj = {   //main object for the whole theater
         for (var i = 0; i < this.theatersMatchStack.length; i++) {
             this.theatersMatchStack, pop();
         };
-        var matchRec = this.retMatchRecFromMovieStack(movieStackIndex);
-        var searchMovieID = matchRec.movie_id;
+        //var matchRec = this.retMatchRecFromMovieStack(movieStackIndex);
+        var searchMovieID = this.movieStack[movieStackIndex].movie_id;
         theaterObj.numMovieClickedIndex = parseInt(movieStackIndex);
-        theaterObj.doMoviesFoundList();
-        outputMoviesByMovieTime();
+        //theaterObj.doMoviesFoundList();
 
         //so movies now are sorted by tiem across all cinemas
         var tmStack = theaterObj.theatersMatchStack;    //output stack
         var mfStack = theaterObj.movieFoundStack        //input stack
-        for( var i=0; i < mfStack.length; i++ ) {
+        for (var i = 0; i < mfStack.length; i++) {
             //so now step thru all of the movies found and find match cinemas
             var searchCinemaID = mfStack[i].cinema_id;
-            var numTFonstack;  //number of theaters found on stack 
+            var numTM = 0;  //number of theaters found on stack 
             var continF = true;
-            do {
+            console.log("loop i = " + i);
+            continLoop = true;
+            if (tmStack.length === 0) {
+                //there is nothing on the stack, so push in a new rec
+                var newRec = jQuery.extend(true, {}, theaterMatchType);
+                newRec.index = numTM;
+                newRec.cinema_id = mfStack[i].cinema_id;
+                newRec.theaterName = "";
+                newRec.movieTimes.push(mfStack[i].startTime_utc);
+                newRec.movieTimesStr = moment(mfStack[i].startTime_utc).format("h:mm a");
+                var newTheater = theaterObj.retMatchRecFromCinemaStack(searchCinemaID);
+                newRec.theaterName = newTheater.theaterName;
+                newRec.address.dispText = newTheater.address.dispText;
+                newRec.address.houseNum = newTheater.address.houseNum;
+                newRec.address.street = newTheater.address.street;
+                newRec.address.city = newTheater.address.city;
+                newRec.address.state = newTheater.address.state;
+                newRec.address.zipCode = newTheater.address.zipCode;
+                newRec.address.geoLocLat = newTheater.address.geoLocLat;
+                newRec.address.geoLocLong = newTheater.address.geoLocLong;
+                newRec.distToCenter = newTheater.distToCenter;
+                newRec.travelTime = newTheater.travelTime;
+                tmStack.push(newRec);
+                continLoop = false;
+                console.log("first one in loop");
+            };
+            while (continLoop === true) {
                 //loop thru all the current recs and see if there is a match
-                if ( searchCinemaID === tmStack[i].cinema_id ) {
+                if (tmStack[numTM].cinema_id === searchCinemaID) {
                     //it matches so append to movie times
-                    tmStack[i].movieTimes.push( startTime_utc );
-                    tmStack[i].movieTimesStr += " " + moments;
-                }
-            }  while ( continF );
+                    console.log("pushing to stack");
+                    tmStack[numTM].movieTimes.push(mfStack[i].startTime_utc);
+                    tmStack[numTM].movieTimesStr += " " + moment(mfStack[i].startTime_utc).format("h:mm a");
+                    continLoop = false;
+                } else {
+                    //doesn't match, check if it is the end
+                    numTM++;
+                    if (numTM >= tmStack.length - 1) {
+                        //it is end of the line, so insert a new cinema record
+                        var newRec = jQuery.extend(true, {}, theaterMatchType);
+                        newRec.index = numTM;
+                        newRec.cinema_id = mfStack[i].cinema_id;
+                        newRec.theaterName = "";
+                        newRec.movieTimes.push(mfStack[i].startTime_utc);
+                        newRec.movieTimesStr = moment(mfStack[i].startTime_utc).format("h:mm a");
+                        var newTheater = theaterObj.retMatchRecFromCinemaStack(searchCinemaID);
+                        newRec.theaterName = newTheater.theaterName;
+                        newRec.address.dispText = newTheater.address.dispText;
+                        newRec.address.houseNum = newTheater.address.houseNum;
+                        newRec.address.street = newTheater.address.street;
+                        newRec.address.city = newTheater.address.city;
+                        newRec.address.state = newTheater.address.state;
+                        newRec.address.zipCode = newTheater.address.zipCode;
+                        newRec.address.geoLocLat = newTheater.address.geoLocLat;
+                        newRec.address.geoLocLong = newTheater.address.geoLocLong;
+                        newRec.distToCenter = newTheater.distToCenter;
+                        newRec.travelTime = newTheater.travelTime;
+                        tmStack.push(newRec);
+                        continLoop = false;
+                    };
+                };
+            };
         };
     },
 
