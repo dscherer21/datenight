@@ -102,6 +102,19 @@ hr {
     opacity: 0;
 }
 
+#cityZipSearch {
+    margin: 0 0 0 25%;
+}
+
+.form-control {
+    width: 50%;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
 .specialFont {
   font-family: 'Lobster', cursive;
 }
