@@ -62,22 +62,7 @@ $(document).ready(function () {
         var checkboxNumber = $("input:checked").attr("data-movie-index");
         theaterObj.createTheatersMatchStack(checkboxNumber);
         console.log(checkboxNumber);
-         //storing Theater Name.
-        var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
-        //storing Theater Name
-        var theaterName = theaterObj.theatersMatchStack[0].theaterName;
-        //storing Theater Address
-        var theaterAddress = theaterObj.theatersMatchStack[0].address.dispText + ' ' + theaterObj.theatersMatchStack[0].address.city + ', ' + theaterObj.theatersMatchStack[0].address.state + ' ' + theaterObj.theatersMatchStack[0].address.zipCode;
-        //storing Movies Times
-        var movieTimes = theaterObj.theatersMatchStack[0].movieTimesStr;
-        //replacing the theatername field with the Theater 
-        $("#movie1").val(chosenMovieName);
-        //Name
-        $('#name1').val(theaterName);
-        //replacing the theaterAddress field with the Theater Address
-        $('#address1').text(theaterAddress);
-        //replacing the movieTimes field with Movie Times
-        $('#times1').text(movieTimes);
+        //storing Theater Name.
 
         var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
         //storing Theater Name
@@ -95,24 +80,36 @@ $(document).ready(function () {
         //replacing the movieTimes field with Movie Times
         $('#times1').text(movieTimes);
 
-        //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
-        //storing Theater Name
-        var theaterName = theaterObj.theatersMatchStack[1].theaterName;
-        //storing Theater Address
-        var theaterAddress = theaterObj.theatersMatchStack[1].address.dispText + ' ' + theaterObj.theatersMatchStack[1].address.city + ', ' + theaterObj.theatersMatchStack[1].address.state + ' ' + theaterObj.theatersMatchStack[1].address.zipCode;
-        //storing Movies Times
-        var movieTimes = theaterObj.theatersMatchStack[1].movieTimesStr;
-        //replacing the theatername field with the Theater 
-        $("#movie2").text(chosenMovieName);
-        //Name
-        $('#name2').text(theaterName);
-        //replacing the theaterAddress field with the Theater Address
-        $('#address2').text(theaterAddress);
-        //replacing the movieTimes field with Movie Times
-        $('#times2').text(movieTimes);
-        //console.log(theaterObj);
- 
-        //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
+        if (theaterObj.theatersMatchStack.length >= 1) {
+            //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
+            //storing Theater Name
+            var theaterName = theaterObj.theatersMatchStack[1].theaterName;
+            //storing Theater Address
+            var theaterAddress = theaterObj.theatersMatchStack[1].address.dispText + ' ' + theaterObj.theatersMatchStack[1].address.city + ', ' + theaterObj.theatersMatchStack[1].address.state + ' ' + theaterObj.theatersMatchStack[1].address.zipCode;
+            //storing Movies Times
+            var movieTimes = theaterObj.theatersMatchStack[1].movieTimesStr;
+            //replacing the theatername field with the Theater 
+            $("#movie2").text(chosenMovieName);
+            //Name
+            $('#name2').text(theaterName);
+            //replacing the theaterAddress field with the Theater Address
+            $('#address2').text(theaterAddress);
+            //replacing the movieTimes field with Movie Times
+            $('#times2').text(movieTimes);
+            //console.log(theaterObj);
+        } else {
+            //hide the block if want to
+            $("#movie2").text(" ");
+            //Name
+            $('#name2').text(" ");
+            //replacing the theaterAddress field with the Theater Address
+            $('#address2').text(" ");
+            //replacing the movieTimes field with Movie Times
+            $('#times2').text(" ");
+        };
+
+        if (theaterObj.theatersMatchStack.length >= 2) {
+            //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
         //storing Theater Name
         var theaterName = theaterObj.theatersMatchStack[2].theaterName;
         //storing Theater Address
@@ -128,6 +125,16 @@ $(document).ready(function () {
         //replacing the movieTimes field with Movie Times
         $('#times3').text(movieTimes);
         //console.log(theaterObj);
+        } else {
+            //hide this block if want to 
+            $("#movie3").text(" ");
+            //Name
+            $('#name3').text(" ");
+            //replacing the theaterAddress field with the Theater Address
+            $('#address3').text(" ");
+            //replacing the movieTimes field with Movie Times
+            $('#times3').text("  ");
+        };
     });
 
     //when the "Let's Get Started" Button is Clicked...
@@ -169,9 +176,27 @@ $(document).ready(function () {
             $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
         };
     });
-   
 
+    //theater button press.  has to be made more DRY but right now, look for the top three
+    $('#theater1').on('click', function () {
+        //pressed on theater number 1, pull up map
+        theaterObj.theaterPicked = 0;  //stack / array is one less than what is displayed
+        console.log("picked #1");
+        evalTheaterClick();
+    });
 
+    $('#theater2').on('click', function () {
+        //pressed on theater number 1, pull up map
+        theaterObj.theaterPicked = 1; //stack / array is one less than what is displayed
+        console.log("picked #2");
+        evalTheaterClick();
+    });
 
+    $('#theater3').on('click', function () {
+        //pressed on theater number 1, pull up map
+        theaterObj.theaterPicked = 2; //stack / array is one less than what is displayed
+        console.log("picked #3");
+        evalTheaterClick();
+    });
 
 });

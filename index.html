@@ -27,6 +27,11 @@
         crossorigin="anonymous"></script>
     <script src="assets/javascript/moment.js"></script>
     <script src="assets/javascript/numeral.js"></script>
+    <!-- google maps script.  loads and then need to run initMap() to get it to display -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&libraries=places" async
+        defer></script>
+    <script src="https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk&center=-33.9,151.14999999999998&zoom=12&format=png&maptype=roadmap&style=element:geometry%7Ccolor:0x1d2c4d&style=element:labels.text.fill%7Ccolor:0x8ec3b9&style=element:labels.text.stroke%7Ccolor:0x1a3646&style=feature:administrative.country%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:administrative.land_parcel%7Celement:labels.text.fill%7Ccolor:0x64779e&style=feature:administrative.province%7Celement:geometry.stroke%7Ccolor:0x4b6878&style=feature:landscape.man_made%7Celement:geometry.stroke%7Ccolor:0x334e87&style=feature:landscape.natural%7Celement:geometry%7Ccolor:0x023e58&style=feature:poi%7Celement:geometry%7Ccolor:0x283d6a&style=feature:poi%7Celement:labels.text.fill%7Ccolor:0x6f9ba5&style=feature:poi%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:poi.park%7Celement:geometry.fill%7Ccolor:0x023e58&style=feature:poi.park%7Celement:labels.text.fill%7Ccolor:0x3C7680&style=feature:road%7Celement:geometry%7Ccolor:0x304a7d&style=feature:road%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:road%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:road.highway%7Celement:geometry%7Ccolor:0x2c6675&style=feature:road.highway%7Celement:geometry.stroke%7Ccolor:0x255763&style=feature:road.highway%7Celement:labels.text.fill%7Ccolor:0xb0d5ce&style=feature:road.highway%7Celement:labels.text.stroke%7Ccolor:0x023e58&style=feature:transit%7Celement:labels.text.fill%7Ccolor:0x98a5be&style=feature:transit%7Celement:labels.text.stroke%7Ccolor:0x1d2c4d&style=feature:transit.line%7Celement:geometry.fill%7Ccolor:0x283d6a&style=feature:transit.station%7Celement:geometry%7Ccolor:0x3a4762&style=feature:water%7Celement:geometry%7Ccolor:0x0e1626&style=feature:water%7Celement:labels.text.fill%7Ccolor:0x4e6d70&size=480x360"></script>
+
 </head>
 
 <body>
@@ -95,13 +100,16 @@
     </div>
 
     <!-- map modal -->
-    <div id="modMap" class="modal" style="height:720px; width:420px; padding:2px" >
+    <div id="modMap" class="modal" style="height:720px; width:420px; padding:2px">
         <div class="modal-content" style="height:90%; width:90%; margin:0px; padding: 2px">
-                <span><h2>Map</h2></span><span id="closeModMap" class="close">&times;</span>
-                <div id="map" style="height:85%; width:100%"></div>
+            <span>
+                <h2>Map</h2>
+            </span>
+            <span id="closeModMap" class="close">&times;</span>
+            <div id="map" style="height:85%; width:100%"></div>
         </div>
     </div>
-    
+
     <script src="assets/javascript/restlocat.js"></script>
     <script src="assets/javascript/moviesearch.js"></script>
     <!--Hamburger Menu-->
@@ -138,8 +146,9 @@
             <p>Let's assume that you and your "SO (aka Significant Other)" would like to go out for a date night, however, you
                 have to continually switch back and forth between websites looking at showtimes and trying to find a place
                 to eat beforehand. Well, that's where
-                <span class="specialFont">DateNight</span> comes in! We take your location, movie you're interested in seeing, , and show you theaters that are showing your movie, and a list of restaurants nearby. Sound
-                Convenient to you? Enter your info below to get started!</p>
+                <span class="specialFont">DateNight</span> comes in! We take your location, movie you're interested in seeing, , and show you theaters
+                that are showing your movie, and a list of restaurants nearby. Sound Convenient to you? Enter your info below
+                to get started!</p>
             <!--Zip or city and State search form-->
             <form>
                 <div class="form-group">
@@ -157,7 +166,7 @@
                         <option value="15">15</option>
                     </select>
                 </div>
-            </form>          
+            </form>
             <button class="btn btn-primary" id='getStarted'>Let's Get Started</button>
         </div>
 
@@ -195,8 +204,8 @@
                 </div>
             </div>
         </div>
-            <!--Search Button-->       
-            <button id="movieSearch" class="btn btn-primary">Search for Theaters</button>
+        <!--Search Button-->
+        <button id="movieSearch" class="btn btn-primary">Search for Theaters</button>
         </div>
 
     </main>
@@ -226,12 +235,12 @@
                     <div class="panel-heading">Option #2</div>
                     <div class="panel-body">
                         <h2>Movie Theater showing
-                            <span class="movieTitle"  id="movie2">Movie Title shows Here</span>:</h2>
+                            <span class="movieTitle" id="movie2">Movie Title shows Here</span>:</h2>
                         <h2>
-                            <span class="theaterName"  id="name2">The Name Here</span> at
+                            <span class="theaterName" id="name2">The Name Here</span> at
                             <span class="theaterAddress" id="address2">Theater Address Here</span>.</h2>
                         <h2>Movie Times:
-                            <span class="movieTimes"  id="times2">Movie Times Here</span>
+                            <span class="movieTimes" id="times2">Movie Times Here</span>
                         </h2>
                         <hr>
                         <h2>Top Restaurants near this theater</h2>
@@ -242,7 +251,7 @@
                     <div class="panel-heading">Option #3</div>
                     <div class="panel-body">
                         <h2>Movie Theater showing
-                            <span class="movieTitle"id="movie3">Movie Title shows Here</span>:</h2>
+                            <span class="movieTitle" id="movie3">Movie Title shows Here</span>:</h2>
                         <h2>
                             <span class="theaterName" id="name3">The Name Here</span> at
                             <span class="theaterAddress" id="address3">Theater Address Here</span>.</h2>

@@ -175,6 +175,7 @@ var theaterObj = {   //main object for the whole theater
     movieStack: [],     //array of movieRecType, sorted by movie name
     genresStack: [],   //all the genres found
     movieFoundStack: [], //all the movies found
+    theaterPicked : 0,  //sent from index.html page
 
 
     buildSearchStr: function (typeSearch, indexNum) {
@@ -757,7 +758,7 @@ var theaterObj = {   //main object for the whole theater
                 } else {
                     //doesn't match, check if it is the end
                     numTM++;
-                    if (numTM >= tmStack.length - 1) {
+                    if (numTM >= tmStack.length) {
                         //it is end of the line, so insert a new cinema record
                         var newRec = jQuery.extend(true, {}, theaterMatchType);
                         newRec.index = numTM;
@@ -1507,10 +1508,18 @@ var evalTheaterClick = function () {
     //theater option clicked
     //so at this point know what movie want to see 
     //and the theater going to
-    var theaterRow = $(this).attr("data-theater-ind");
-    console.log("theater #" + theaterRow);
+    var currCinemaRec;
     var mfStack = theaterObj.movieFoundStack;  //shorthand
-    var currCinemaRec = theaterObj.retMatchRecFromCinemaStack(mfStack[theaterRow].cinema_id);
+    if ( configData.dispRichOutput == true ) {
+        var theaterRow = $(this).attr("data-theater-ind");
+        currCinemaRec = theaterObj.retMatchRecFromCinemaStack(mfStack[theaterRow].cinema_id);
+    } else {
+        //came from index file, so need different way to pull
+        //so cinema ID comes from theatersMatchStack     
+        var thPicked = theaterObj.theaterPicked;
+        var TMstack = theaterObj.theatersMatchStack; //shorthand to make next line readable
+        currCinemaRec = theaterObj.retMatchRecFromCinemaStack(TMstack[thPicked].cinema_id);
+    }
     var ctRec = theaterObj.currTheaterDisp;   //shorthand for current theater record
     var geoLat = currCinemaRec.address.geoLocLat;
     var geoLong = currCinemaRec.address.geoLocLong;
@@ -1540,6 +1549,9 @@ var evalTheaterClick = function () {
         //document.getElementById("container-map").style.display = "block";
         // popup is shown and map is not visible
         //google.maps.event.trigger(map, 'resize');
+    } else {
+        //in case need to do something special in the index.html file
+        displayMap(true);
     };
 
     console.log("(" + numeral(geoLat).format("+0000.000000") + "," + numeral(geoLong).format("+0000.000000") + ")");
