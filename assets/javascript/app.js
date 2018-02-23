@@ -27,9 +27,11 @@ var displayMovies = function () {
         $(movieCardBlock).appendTo(movieCard);
         $(trailerButton).appendTo(movieCard);
         $(movieCard).appendTo(movieCardActive);
+        //gives the first card of the carousel a class of active to make it functional
         if (i === 0) {
             $(movieCardActive).addClass('active');
         }
+        //
         $(movieCardActive).appendTo(movieDiv);
     };
 
@@ -37,6 +39,7 @@ var displayMovies = function () {
 
 $(document).ready(function () {
     console.log("ready!");
+    getLocation();
 
     /* Set the width of the side navigation to 250px */
     $(document.body).on('click', '#navIcon', function openNav() {
@@ -56,10 +59,22 @@ $(document).ready(function () {
         //change main3 style to display: initial: to show it
         $('#main3').attr('style', 'display: initial;');
         //store any movie-index that has a check mark in its box
-        $("input:checked").attr("data-movie-index");
+        var checkboxNumber = $("input:checked").attr("data-movie-index");
+         //storing Theater Name.
+        var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
+        //storing Theater Name
+        var theaterName = theaterObj.theatersMatchStack.theaterName;
+        //storing Theater Address
+        var theaterAddress = theaterObj.theatersMatchStack.address.dispText + ' ' + theaterObj.theatersMatchStack.address.city + ', ' + theaterObj.theatersMatchStack.address.state + ' ' + theaterObj.theatersMatchStack.address.zipCode;
+        //storing Movies Times
+        var movieTimes = theaterObj.theatersMatchStack.movieTimes;
+        //replacing the theatername field with the Theater Name
+        $('.theaterName').append(theaterName);
+        //replacing the theaterAddress field with the Theater Address
+        $('theaterAddress').append(theaterAddress);
+        //replacing the movieTimes field with Movie Times
+        $('.movieTimes').append(movieTimes);
 
-        
-        //getLocation();
         //console.log(theaterObj);
     });
 
@@ -82,7 +97,7 @@ $(document).ready(function () {
 
 
 
-    // Instantiate the Bootstrap carousel
+    // Initiate the Bootstrap carousel
     $('.multi-item-carousel').carousel({
         interval: false
     });
@@ -102,5 +117,9 @@ $(document).ready(function () {
             $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
         };
     });
+   
+
+
+
 
 });
