@@ -175,7 +175,7 @@ var theaterObj = {   //main object for the whole theater
     movieStack: [],     //array of movieRecType, sorted by movie name
     genresStack: [],   //all the genres found
     movieFoundStack: [], //all the movies found
-    theaterPicked : 0,  //sent from index.html page
+    theaterPicked: 0,  //sent from index.html page
 
 
     buildSearchStr: function (typeSearch, indexNum) {
@@ -254,7 +254,7 @@ var theaterObj = {   //main object for the whole theater
     doSearchInitialDone: function () {
         //part one of search is done
         modalWaitSearch1.style.display = "block";
-        
+
         theaterObj.theaterResponseToStack(dataTheaterSearch);
         console.log("... done ....");
         //all of the theater records are in
@@ -730,7 +730,7 @@ var theaterObj = {   //main object for the whole theater
                 newRec.cinema_id = mfStack[i].cinema_id;
                 newRec.theaterName = "";
                 newRec.movieTimes.push(mfStack[i].startTime_utc);
-                newRec.movieTimesStr = moment(mfStack[i].startTime_utc).format("h:mm a");
+                newRec.movieTimesStr = moment(mfStack[i].startTime_utc).format("h:mma");
                 var newTheater = theaterObj.retMatchRecFromCinemaStack(searchCinemaID);
                 newRec.theaterName = newTheater.theaterName;
                 newRec.address.dispText = newTheater.address.dispText;
@@ -753,7 +753,7 @@ var theaterObj = {   //main object for the whole theater
                     //it matches so append to movie times
                     console.log("pushing to stack");
                     tmStack[numTM].movieTimes.push(mfStack[i].startTime_utc);
-                    tmStack[numTM].movieTimesStr += " " + moment(mfStack[i].startTime_utc).format("h:mm a");
+                    tmStack[numTM].movieTimesStr += "  " + moment(mfStack[i].startTime_utc).format("h:mma");
                     continLoop = false;
                 } else {
                     //doesn't match, check if it is the end
@@ -1351,16 +1351,35 @@ var outputShowTimes = function () {
 };
 
 
+var geoPushDefault = function () {
+    //send in a default address if blocked the input
+    theaterObj.searchLoc.addrOriginalStr = "2607 W 17th St, Chicago IL 60608";
+    theaterObj.searchLoc.addrSearchStr = "2607 W 17th St, Chicago IL 60608";
+    theaterObj.searchLoc.lat = numeral(41.8583606).format("+0000.000000");
+    theaterObj.searchLoc.long = numeral(-87.69337).format("+0000.000000");
+    if (configData.dispRichOutput === true) {
+        $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+        $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
+    } else {
+        $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+    };
+
+};
+
 var getLocation = function () {
     modalWaitLocation.style.display = "block";
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-    } else {
-        //no GPS allowed
-        alert("Geolocation is not supported by this browser.");
-    };
+    navigator.geolocation.getCurrentPosition(showPosition,
+        function (error) {
+            //there is a problem with getting the GPS data
+
+            //alert("why cancel ?")
+            geoPushDefault();
+            modalWaitLocation.style.display = "none";
+            //showPosition();
+        });
+
     if (configData.dispRichOutput === true) {
-        modalMap.style.display = "none";
+        //modalMap.style.display = "none";
         //document.getElementById("container-map").style.display = "none";
     };
 };
@@ -1510,7 +1529,7 @@ var evalTheaterClick = function () {
     //and the theater going to
     var currCinemaRec;
     var mfStack = theaterObj.movieFoundStack;  //shorthand
-    if ( configData.dispRichOutput == true ) {
+    if (configData.dispRichOutput == true) {
         var theaterRow = $(this).attr("data-theater-ind");
         currCinemaRec = theaterObj.retMatchRecFromCinemaStack(mfStack[theaterRow].cinema_id);
     } else {
@@ -1654,7 +1673,11 @@ window.onclick = function (event) {
     if (event.target == modalMap) {
         modalMap.style.display = "none";
     }
-}
+};
 
-
+var hideLineTheater = function (tNum) {
+    //hide a theater
+    if (tNum == 2) { $("#theater2").css("display", "none"); };
+    if (tNum == 3) { $("#theater3").css("display", "none"); };
+};
 

@@ -238,3 +238,25 @@ hr {
         width: 120%;
     }
 }
+
+#infowindow-header {
+    color: rgba(66, 1, 13, 1);
+}
+
+#theatre-name-infowindow,
+#theatre-infowindow {
+    color: black;
+    line-height: 15px;
+}
+
+#modMap {
+    min-height: 100%;
+    top: 10%;
+}
+
+@media screen and (max-width: 800px) {
+    #modMap {
+        height: 100%;
+        width: 100%;
+    }
+}
