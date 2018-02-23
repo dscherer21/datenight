@@ -23,12 +23,16 @@ var configData = {
 var map;
 var infowindow;
 var testTheater = { lat: 41.9499, lng: -87.6638 };
+var testHome;
+
 
 //Initial Function to Load Map
 var initMap = function () {
     //Using Coordinates for Music Box Theater. 
     //This would be coordinates of theater pulled in from user selection
     //testTheater = { lat: 41.9499, lng: -87.6638 };
+
+    testHome = {lat: parseFloat(theaterObj.searchLoc.lat), lng: parseFloat(theaterObj.searchLoc.long)};
 
     //Map Options
     map = new google.maps.Map(document.getElementById('map'), {
@@ -269,6 +273,19 @@ var initMap = function () {
                 ]
             }
         ]
+    });
+
+    //Add Home Marker
+    var homeIcon = {
+        //Variable to add in Custom Image of Movie theater
+        url: "assets/images/yellow-house.gif", // url
+        scaledSize: new google.maps.Size(50, 50), // scaled size
+        origin: new google.maps.Point(0, 0), // origin
+        anchor: new google.maps.Point(0, 0) // anchor
+    }; var marker = new google.maps.Marker({
+        position: testHome,
+        map: map,
+        icon: homeIcon
     });
 
     //Add Theater Marker
