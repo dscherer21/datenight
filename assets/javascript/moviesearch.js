@@ -17,9 +17,9 @@ var modalMap = document.getElementById('modMap'); //map modal popup
 var closeModMap = document.getElementById("closeModMap");
 
 // When the user clicks on <span> (x), close the modal
-closeModMap.onclick = function () {
-    modalMap.style.display = "none";
-};
+//closeModMap.onclick = function () {
+    //modalMap.style.display = "none";
+//};
 
 var dataSrch = "";
 var dataSrchDone = false;
@@ -705,7 +705,7 @@ var theaterObj = {   //main object for the whole theater
         //var matchRec = this.retMatchRecFromMovieStack(movieStackIndex);
         var searchMovieID = this.movieStack[movieStackIndex].movie_id;
         theaterObj.numMovieClickedIndex = parseInt(movieStackIndex);
-        //theaterObj.doMoviesFoundList();
+        theaterObj.doMoviesFoundList();
 
         //so movies now are sorted by tiem across all cinemas
         var tmStack = theaterObj.theatersMatchStack;    //output stack

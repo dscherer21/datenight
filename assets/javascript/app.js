@@ -60,21 +60,73 @@ $(document).ready(function () {
         $('#main3').attr('style', 'display: initial;');
         //store any movie-index that has a check mark in its box
         var checkboxNumber = $("input:checked").attr("data-movie-index");
+        theaterObj.createTheatersMatchStack(checkboxNumber);
+        console.log(checkboxNumber);
          //storing Theater Name.
         var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
         //storing Theater Name
-        var theaterName = theaterObj.theatersMatchStack.theaterName;
+        var theaterName = theaterObj.theatersMatchStack[0].theaterName;
         //storing Theater Address
-        var theaterAddress = theaterObj.theatersMatchStack.address.dispText + ' ' + theaterObj.theatersMatchStack.address.city + ', ' + theaterObj.theatersMatchStack.address.state + ' ' + theaterObj.theatersMatchStack.address.zipCode;
+        var theaterAddress = theaterObj.theatersMatchStack[0].address.dispText + ' ' + theaterObj.theatersMatchStack[0].address.city + ', ' + theaterObj.theatersMatchStack[0].address.state + ' ' + theaterObj.theatersMatchStack[0].address.zipCode;
         //storing Movies Times
-        var movieTimes = theaterObj.theatersMatchStack.movieTimes;
-        //replacing the theatername field with the Theater Name
-        $('.theaterName').append(theaterName);
+        var movieTimes = theaterObj.theatersMatchStack[0].movieTimesStr;
+        //replacing the theatername field with the Theater 
+        $("#movie1").val(chosenMovieName);
+        //Name
+        $('#name1').val(theaterName);
         //replacing the theaterAddress field with the Theater Address
-        $('theaterAddress').append(theaterAddress);
+        $('#address1').text(theaterAddress);
         //replacing the movieTimes field with Movie Times
-        $('.movieTimes').append(movieTimes);
+        $('#times1').text(movieTimes);
 
+        var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
+        //storing Theater Name
+        var theaterName = theaterObj.theatersMatchStack[0].theaterName;
+        //storing Theater Address
+        var theaterAddress = theaterObj.theatersMatchStack[0].address.dispText + ' ' + theaterObj.theatersMatchStack[0].address.city + ', ' + theaterObj.theatersMatchStack[0].address.state + ' ' + theaterObj.theatersMatchStack[0].address.zipCode;
+        //storing Movies Times
+        var movieTimes = theaterObj.theatersMatchStack[0].movieTimesStr;
+        //replacing the theatername field with the Theater 
+        $("#movie1").text(chosenMovieName);
+        //Name
+        $('#name1').text(theaterName);
+        //replacing the theaterAddress field with the Theater Address
+        $('#address1').text(theaterAddress);
+        //replacing the movieTimes field with Movie Times
+        $('#times1').text(movieTimes);
+
+        //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
+        //storing Theater Name
+        var theaterName = theaterObj.theatersMatchStack[1].theaterName;
+        //storing Theater Address
+        var theaterAddress = theaterObj.theatersMatchStack[1].address.dispText + ' ' + theaterObj.theatersMatchStack[1].address.city + ', ' + theaterObj.theatersMatchStack[1].address.state + ' ' + theaterObj.theatersMatchStack[1].address.zipCode;
+        //storing Movies Times
+        var movieTimes = theaterObj.theatersMatchStack[1].movieTimesStr;
+        //replacing the theatername field with the Theater 
+        $("#movie2").text(chosenMovieName);
+        //Name
+        $('#name2').text(theaterName);
+        //replacing the theaterAddress field with the Theater Address
+        $('#address2').text(theaterAddress);
+        //replacing the movieTimes field with Movie Times
+        $('#times2').text(movieTimes);
+        //console.log(theaterObj);
+ 
+        //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
+        //storing Theater Name
+        var theaterName = theaterObj.theatersMatchStack[2].theaterName;
+        //storing Theater Address
+        var theaterAddress = theaterObj.theatersMatchStack[2].address.dispText + ' ' + theaterObj.theatersMatchStack[2].address.city + ', ' + theaterObj.theatersMatchStack[2].address.state + ' ' + theaterObj.theatersMatchStack[2].address.zipCode;
+        //storing Movies Times
+        var movieTimes = theaterObj.theatersMatchStack[2].movieTimesStr;
+        //replacing the theatername field with the Theater 
+        $("#movie3").text(chosenMovieName);
+        //Name
+        $('#name3').text(theaterName);
+        //replacing the theaterAddress field with the Theater Address
+        $('#address3').text(theaterAddress);
+        //replacing the movieTimes field with Movie Times
+        $('#times3').text(movieTimes);
         //console.log(theaterObj);
     });
 
