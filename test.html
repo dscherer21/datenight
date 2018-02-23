@@ -52,13 +52,13 @@
     <div class="wrapper">
         <div id="inputSect" style="margin:3px; padding:3px">
             <!--        <form id="user-form">   -->
-            <label for="number-input">Lat</label>
-            <input type="number" id="input-lat" style="display:inline; width:100px">
-            <label for="number-input">Long</label>
-            <input type="number" id="input-lon" style="display:inline; width:100px">
+            <label for="number-input" id="GPScoord">GPS ccoord</label>
             <p></p>
             <label for="number-input">Distance</label>
             <input type="number" id="input-dist" style="display:inline;">
+            <p></p>
+            <label for="number-input">Address at</label>
+            <input type="text" id="input-addr" style="display:inline;">
             <p></p>
             <!-- Button triggers new movie to be added -->
             <input id="bttnUserInput" type="submit" value="Submit">
@@ -145,8 +145,8 @@
 <!-- style="height:70%; width:1000px; margin:0px; padding: 2px" -->
     <div id="modMap" class="modal" style="height:720px; width:420px; padding:2px" >
         <div class="modal-content" style="height:90%; width:90%; margin:0px; padding: 2px">
-                <span id="closeModMap" class="close">&times;</span>
-                <div id="map" style="height:50%; width:100%"></div>
+                <span><h2>Map</h2></span><span id="closeModMap" class="close">&times;</span>
+                <div id="map" style="height:85%; width:100%"></div>
         </div>
     </div>
 
@@ -182,17 +182,18 @@
                 event.preventDefault();
                 //already in 
                 if (configData.dispRichOutput === true) {
+                    /*
                     theaterObj.searchLat = numeral($("#input-lat").val()).format("+0000.000000");
                     theaterObj.searchLon = numeral($("#input-lon").val()).format("+0000.000000");
+                    */
                     var distInKM = parseFloat($("#input-dist").val()) * 1.60934;
                     theaterObj.searchLoc.dist = numeral(distInKM).format("+0000.0000");
                 };
 
-                if (theaterObj.searchLat === "+0000.000000" || theaterObj.searchLon === "+0000.000000") {
+                if (theaterObj.searchLoc.lat === "+0000.000000" || theaterObj.searchLoc.long  === "+0000.000000") {
                     //left blank, so put in Evanston as default
-                    theaterObj.searchLat = numeral(42.048995).format("+0000.000000");
-                    theaterObj.searchLon = numeral(-87.684505).format("+0000.000000");
-                    theaterObj.searchDist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
+                    theaterObj.searchLoc.lat = numeral(42.048995).format("+0000.000000");
+                    theaterObj.searchLoc.long = numeral(-87.684505).format("+0000.000000");
                 };
 
                 //for modal popups

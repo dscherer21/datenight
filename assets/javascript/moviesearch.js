@@ -683,7 +683,9 @@ var testSearch = function () {
         theaterObj.cinemaIDstack.pop();
     };
 
-    theaterObj.searchLoc.dist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
+    if (configData.dispRichOutput != true) {
+        theaterObj.searchLoc.dist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
+    };
     theaterObj.doSearchInitial();
     console.log("data search done = " + dataSrchDone);
     console.log("waiting for a return");
@@ -1266,7 +1268,12 @@ var convertGeoToAddr = function () {
         theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
         //turn off wait location
         modalWaitLocation.style.display = "none";
-        $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+        if (configData.dispRichOutput != true) {
+            $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+        } else {
+            $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("0000.000000"));
+            $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
+        };
     });
 };
 
@@ -1316,7 +1323,7 @@ var evalTheaterClick = function () {
     ctRec.address.zipCode = currCinemaRec.address.zipCode;
 
     if (configData.dispRichOutput == true) {
-        displayMap( true );
+        displayMap(true);
         //document.getElementById("container-map").style.display = "block";
         // popup is shown and map is not visible
         //google.maps.event.trigger(map, 'resize');
@@ -1403,9 +1410,9 @@ var restOpenTableObj = { //everything for OpenTable
     }
 };
 
-var displayMap = function ( dispOn ) {
+var displayMap = function (dispOn) {
     //display the map if the dispOn is on
-    if ( dispOn === true ) {
+    if (dispOn === true) {
         modalMap.style.display = "block";
         initMap();
     } else {
