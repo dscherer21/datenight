@@ -721,7 +721,7 @@ var theaterObj = {   //main object for the whole theater
                 if ( searchCinemaID === tmStack[i].cinema_id ) {
                     //it matches so append to movie times
                     tmStack[i].movieTimes.push( startTime_utc );
-                    tmStack[i].movieTimesStr += " " + moments
+                    tmStack[i].movieTimesStr += " " + moments;
                 }
             }  while ( continF );
         };
