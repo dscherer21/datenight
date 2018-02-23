@@ -80,7 +80,7 @@ $(document).ready(function () {
         //replacing the movieTimes field with Movie Times
         $('#times1').text(movieTimes);
 
-        if (theaterObj.theatersMatchStack.length >= 1) {
+        if (theaterObj.theatersMatchStack.length > 1) {
             //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
             //storing Theater Name
             var theaterName = theaterObj.theatersMatchStack[1].theaterName;
@@ -98,42 +98,30 @@ $(document).ready(function () {
             $('#times2').text(movieTimes);
             //console.log(theaterObj);
         } else {
-            //hide the block if want to
-            $("#movie2").text(" ");
-            //Name
-            $('#name2').text(" ");
-            //replacing the theaterAddress field with the Theater Address
-            $('#address2').text(" ");
-            //replacing the movieTimes field with Movie Times
-            $('#times2').text(" ");
+            hideLineTheater(2);  //this function uses option # to hide it
+            //line #3 must be blank also
+            hideLineTheater(3);  //this function uses option # to hide it
         };
 
-        if (theaterObj.theatersMatchStack.length >= 2) {
+        if (theaterObj.theatersMatchStack.length > 2) {
             //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
-        //storing Theater Name
-        var theaterName = theaterObj.theatersMatchStack[2].theaterName;
-        //storing Theater Address
-        var theaterAddress = theaterObj.theatersMatchStack[2].address.dispText + ' ' + theaterObj.theatersMatchStack[2].address.city + ', ' + theaterObj.theatersMatchStack[2].address.state + ' ' + theaterObj.theatersMatchStack[2].address.zipCode;
-        //storing Movies Times
-        var movieTimes = theaterObj.theatersMatchStack[2].movieTimesStr;
-        //replacing the theatername field with the Theater 
-        $("#movie3").text(chosenMovieName);
-        //Name
-        $('#name3').text(theaterName);
-        //replacing the theaterAddress field with the Theater Address
-        $('#address3').text(theaterAddress);
-        //replacing the movieTimes field with Movie Times
-        $('#times3').text(movieTimes);
-        //console.log(theaterObj);
-        } else {
-            //hide this block if want to 
-            $("#movie3").text(" ");
+            //storing Theater Name
+            var theaterName = theaterObj.theatersMatchStack[2].theaterName;
+            //storing Theater Address
+            var theaterAddress = theaterObj.theatersMatchStack[2].address.dispText + ' ' + theaterObj.theatersMatchStack[2].address.city + ', ' + theaterObj.theatersMatchStack[2].address.state + ' ' + theaterObj.theatersMatchStack[2].address.zipCode;
+            //storing Movies Times
+            var movieTimes = theaterObj.theatersMatchStack[2].movieTimesStr;
+            //replacing the theatername field with the Theater 
+            $("#movie3").text(chosenMovieName);
             //Name
-            $('#name3').text(" ");
+            $('#name3').text(theaterName);
             //replacing the theaterAddress field with the Theater Address
-            $('#address3').text(" ");
+            $('#address3').text(theaterAddress);
             //replacing the movieTimes field with Movie Times
-            $('#times3').text("  ");
+            $('#times3').text(movieTimes);
+            //console.log(theaterObj);
+        } else {
+            hideLineTheater(3);  //this function uses option # to hide it
         };
     });
 

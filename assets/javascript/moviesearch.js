@@ -1654,7 +1654,11 @@ window.onclick = function (event) {
     if (event.target == modalMap) {
         modalMap.style.display = "none";
     }
-}
+};
 
-
+var hideLineTheater = function ( tNum ) {
+    //hide a theater
+    if ( tNum == 2) {  $("#theater2").css("display", "none"); };
+    if ( tNum == 3) {  $("#theater3").css("display", "none"); };
+};
 
