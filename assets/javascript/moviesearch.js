@@ -754,7 +754,7 @@ var theaterObj = {   //main object for the whole theater
                     //it matches so append to movie times
                     console.log("pushing to stack");
                     tmStack[numTM].movieTimes.push(mfStack[i].startTime_utc);
-                    tmStack[numTM].movieTimesStr += " geo " + moment(mfStack[i].startTime_utc).format("h:mma");
+                    tmStack[numTM].movieTimesStr += "  " + moment(mfStack[i].startTime_utc).format("h:mma");
                     continLoop = false;
                 } else {
                     //doesn't match, check if it is the end
@@ -766,7 +766,7 @@ var theaterObj = {   //main object for the whole theater
                         newRec.cinema_id = mfStack[i].cinema_id;
                         newRec.theaterName = "";
                         newRec.movieTimes.push(mfStack[i].startTime_utc);
-                        newRec.movieTimesStr = moment(mfStack[i].startTime_utc).format("h:mm a");
+                        newRec.movieTimesStr = moment(mfStack[i].startTime_utc).format("h:mma");
                         var newTheater = theaterObj.retMatchRecFromCinemaStack(searchCinemaID);
                         newRec.theaterName = newTheater.theaterName;
                         newRec.address.dispText = newTheater.address.dispText;
