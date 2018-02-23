@@ -291,7 +291,7 @@ var initMap = function () {
 
     var infoWindow = new google.maps.InfoWindow({
 
-        content: '<div><p><strong>' + theaterObj.currTheaterDisp.theaterName + '</strong></p>' + '<p><strong><a href="' + theaterObj.currTheaterDisp.url + '"target="_blank">Website</a></strong></p>' + '<p><strong><a href="' + theaterDirectionsURL + '"target="_blank">Directions to Theater</a></strong></p></div>'
+        content: '<div><p id="theatre-name-infowindow"><strong>' + theaterObj.currTheaterDisp.theaterName + '</strong></p>' + '<p><strong><a href="' + theaterObj.currTheaterDisp.url + '"target="_blank">Website</a></strong></p>' + '<p><strong><a href="' + theaterDirectionsURL + '"target="_blank">Directions to Theater</a></strong></p></div>'
     });
 
     //Event Listener for Theater Marker
@@ -374,7 +374,7 @@ var initMap = function () {
                     var directionsURL = 'https://www.google.com/maps/dir/?api=1&origin=' + testTheater.lat + ', ' + testTheater.lng + '&destination=' + place.formatted_address + '&travelmode=driving';
 
                     //Variable to more easily see all elements added to InfoWindow
-                    var urlString = '<div><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website;
+                    var urlString = '<div id="theatre-infowindow"><strong>' + place.name + '</strong><br>' + '<br>' + '<strong><a href="' + place.website;
                     urlString += '"target="_blank">Website</a></strong>' + '   |   ' + '<strong><a href="' + directionsURL + '"target="_blank">Directions to Restaurant from Theater</a></strong>' + '<p><strong>Address: </strong>' + place.formatted_address + '</p>';
                     urlString += '<p><strong>Phone: </strong>' + place.formatted_phone_number + '</p>';
                     urlString += '<p><strong>Rating: </strong>' + place.rating + '</p>' + '<p><strong>Price level: </strong>' + place.price_level + '</p>';
