@@ -11,15 +11,21 @@ body {
     font-size: 28px;
 }
 
+p {
+    margin: 30px;
+}
+
 .modal {
-  top: 200px;
+  top: 30%;
   width: 70%;
   left: 20%;
   text-align: center;
 }
 
-.modal-content {
+.loading {
   background-color: rgba(66, 1, 13, 1);
+  background-image: url('../images/loadingimage.gif');
+  background-position: center;
 }
 
 header {
@@ -33,6 +39,10 @@ h1 {
     font-size: 62px;
 }
 
+h2{
+    text-align: center;
+}
+
 #main1 {
     display: initial;
 }
@@ -43,6 +53,10 @@ h1 {
 
 #main3 {
     display: none;
+}
+
+#movieSearch {
+    margin: 5% 0 0 42%;
 }
 
 #distance {
