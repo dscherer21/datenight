@@ -119,6 +119,10 @@ hr {
   font-family: 'Lobster', cursive;
 }
 
+.panel {
+    margin: 10px;
+}
+
 .panel-body {
     color: black;
 }
