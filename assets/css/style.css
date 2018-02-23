@@ -15,12 +15,6 @@ p {
     margin: 30px;
 }
 
-nav {
-    background-color: rgba(66, 1, 13, 1);
-    background-size: cover;
-    box-shadow: 12px 12px 12px 1px rgba(255,255,255,.2);
-}
-
 header.container {
     width: 100%;;
 }
@@ -50,11 +44,22 @@ hr {
     opacity: 0;
 }
 
+.navbar-default {
+    background-color: rgba(66, 1, 13, 1);
+    background-size: cover;
+    box-shadow: 12px 12px 12px 1px rgba(255,255,255,.2);
+    border: none;
+}
+
 .modal {
     top: 30%;
     width: 70%;
     left: 20%;
     text-align: center;
+}
+
+.modal-content {
+    height: 70%;
 }
 
  .loading {
@@ -116,8 +121,8 @@ hr {
       transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
   }
   
-  /* The navigation menu links */
-  .sidenav a {
+/* The navigation menu links */
+.sidenav a {
       padding: 8px 8px 8px 32px;
       text-decoration: none;
       font-size: 25px;
@@ -126,15 +131,15 @@ hr {
       transition: 0.3s;
       text-align: right;
       margin-right: 10px;
-  }
+}
   
-  /* When you mouse over the navigation links, change their color */
-  .sidenav a:hover {
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
       color: #f1f1f1;
-  }
+}
   
-  /* Position and style the close button (top right corner) */
-  .sidenav .closebtn {
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
       position: absolute;
       top: 0;
       left: 0;
@@ -188,6 +193,21 @@ hr {
     width: 100%;
 }
 
+#infowindow-header {
+    color: rgba(66, 1, 13, 1);
+}
+
+#theatre-name-infowindow,
+#theatre-infowindow {
+    color: black;
+    line-height: 15px;
+}
+
+#modMap {
+    min-height: 100%;
+    top: 10%;
+}
+
 @media screen and (max-width: 768px) {
 
     #navIcon {
@@ -237,21 +257,6 @@ hr {
     #navIcon {
         width: 120%;
     }
-}
-
-#infowindow-header {
-    color: rgba(66, 1, 13, 1);
-}
-
-#theatre-name-infowindow,
-#theatre-infowindow {
-    color: black;
-    line-height: 15px;
-}
-
-#modMap {
-    min-height: 100%;
-    top: 10%;
 }
 
 @media screen and (max-width: 800px) {
