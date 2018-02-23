@@ -5,7 +5,8 @@ var configData = {
     theaterSearchDist: 5, //2 miles search earea
     //    restaurantSearchDist: 2, //2 miles
     restaurantSearchDist: 2 * 1609.34,  //because google is in meters
-    dispRichOutput: false
+    dispRichOutput: false,
+    dispRichTestFalseGPS: true   //punch in known values for GPS
 };
 
 var modalWaitSearch1 = document.getElementById('modSearch1'); //earch all records
@@ -16,10 +17,10 @@ var modalWaitMovieTimes = document.getElementById('modMovieTimes'); //movie time
 var modalMap = document.getElementById('modMap'); //map modal popup
 var closeModMap = document.getElementById("closeModMap");
 
-// When the user clicks on <span> (x), close the modal
-//closeModMap.onclick = function () {
-    //modalMap.style.display = "none";
-//};
+//When the user clicks on <span> (x), close the modal
+closeModMap.onclick = function () {
+    modalMap.style.display = "none";
+};
 
 var dataSrch = "";
 var dataSrchDone = false;
@@ -156,7 +157,8 @@ var theaterObj = {   //main object for the whole theater
         lat: 0.0,
         long: 0.0,
         dist: 0.0,
-        addrSearchStr: ""
+        addrSearchStr: "",
+        addrOriginalStr: ""   //used when first call the routine
     },
 
     theaterStack: [],      //array of theaters  --- treat as stack
@@ -250,6 +252,8 @@ var theaterObj = {   //main object for the whole theater
 
     doSearchInitialDone: function () {
         //part one of search is done
+        modalWaitSearch1.style.display = "block";
+        
         theaterObj.theaterResponseToStack(dataTheaterSearch);
         console.log("... done ....");
         //all of the theater records are in
@@ -705,6 +709,7 @@ var theaterObj = {   //main object for the whole theater
         //var matchRec = this.retMatchRecFromMovieStack(movieStackIndex);
         var searchMovieID = this.movieStack[movieStackIndex].movie_id;
         theaterObj.numMovieClickedIndex = parseInt(movieStackIndex);
+
         theaterObj.doMoviesFoundList();
 
         //so movies now are sorted by tiem across all cinemas
@@ -784,13 +789,13 @@ var theaterObj = {   //main object for the whole theater
 };
 
 var testSearch = function () {
+    //entry point to do a search
+    //global function outside of the theaterObj
     theaterObj.clearStack();
     if (configData.dispRichOutput == true) {
         modalMap.style.display = "none";
         //document.getElementById("container-map").style.display = "none";
     };
-
-    modalWaitSearch1.style.display = "block";
 
     //clear all the movie theaters found in the area
     for (var i = 0; i < theaterObj.theatersFoundStack.length; i++) {
@@ -804,9 +809,11 @@ var testSearch = function () {
     if (configData.dispRichOutput != true) {
         theaterObj.searchLoc.dist = numeral($("#distance").val() * 1.60934).format("+0000.0000");
     };
-    theaterObj.doSearchInitial();
-    console.log("data search done = " + dataSrchDone);
-    console.log("waiting for a return");
+
+    //used to call:  theaterObj.doSearchInitial();
+    //now done in   geo conversion
+    //so, go and check the address to geo conversion
+    checkAndConvertAddrToGeo();
 };
 
 
@@ -1384,17 +1391,101 @@ var convertGeoToAddr = function () {
         method: "GET"
     }).then(function (response) {
         theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
-        //turn off wait location
-        modalWaitLocation.style.display = "none";
+        //store the orignal string to see if need to re-compute geo location
+        theaterObj.searchLoc.addrOriginalStr = theaterObj.searchLoc.addrSearchStr;
         if (configData.dispRichOutput != true) {
             $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
         } else {
-            $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("0000.000000"));
+            $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
             $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
         };
+        //turn off wait location
+        modalWaitLocation.style.display = "none";
     });
 };
 
+var checkAndConvertAddrToGeo = function () {
+    // take address typed in an convert to Geo Location
+    // RPB to implement
+    //turn on wait location
+    modalWaitLocation.style.display = "block";
+
+    //read in the current inputted address and see if it changed
+    var origAddrStr;
+    if (theaterObj.searchLoc.addrOriginalStr == undefined || theaterObj.searchLoc.addrOriginalStr == null) {
+        origAddrStr = "";
+    } else {
+        origAddrStr = theaterObj.searchLoc.addrOriginalStr.trim();
+    };
+
+    //need to check for blanks and null before accepting page's address
+    var strIn;
+    if (configData.dispRichOutput != true) {
+        //full page
+        strIn = $("#cityZipSearch").val();
+    } else {
+        //rich's test screen has different data
+        var strIn = $("#input-addr").val();
+    };
+    if (strIn == null || strIn == undefined) {
+        //handle a blank input
+        strIn = "";
+    };
+    var pageAddrStr = strIn.trim();  //address inputted on page
+
+    if (origAddrStr != pageAddrStr) {
+        //need to do a new search to get new geo location
+        //for testing false or bad location, just force in a known address
+        if (configData.dispRichTestFalseGPS == true) {
+            //for now, just blast in 467 W. second street address
+            theaterObj.searchLoc.addrOriginalStr = "467 W. Second Street, Elmhurst IL 60126";
+            theaterObj.searchLoc.addrSearchStr = "467 W. Second Street, Elmhurst IL 60126";
+            theaterObj.searchLoc.lat = numeral(41.9057183).format("+0000.000000");
+            theaterObj.searchLoc.long = numeral(-87.9747192).format("+0000.000000");
+            if (configData.dispRichOutput != true) {
+                $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+            } else {
+                $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+                $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
+            };
+            doneConvertAddrToGeo();
+        } else {
+            //needs new geo location based on address and NOT in test mode
+            var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + theaterObj.searchLoc.lat + "," + theaterObj.searchLoc.long + "&key=AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk";
+            $.ajax({
+                url: userPositionToAddressURL,
+                method: "GET"
+            }).then(function (response) {
+                //got the geo location
+                var locLatIn = "";
+                var locLongIn = "";
+                theaterObj.searchLoc.lat = numeral(locLatIn).format("+0000.000000");
+                theaterObj.searchLoc.long = numeral(locLongIn).format("+0000.000000");
+
+                //theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
+                //turn off wait location
+                modalWaitLocation.style.display = "none";
+                if (configData.dispRichOutput != true) {
+                    $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+                } else {
+                    $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+                    $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
+                };
+                doneConvertAddrToGeo();
+            });
+        }
+    } else {
+        //old addr matches, so can continue
+        doneConvertAddrToGeo();
+    };
+};
+
+var doneConvertAddrToGeo = function () {
+    //geo conversion is done, continue on
+    //turn off wait location
+    modalWaitLocation.style.display = "none";
+    theaterObj.doSearchInitial();
+};
 
 var evalPicClick = function () {
     //a picture got clicked

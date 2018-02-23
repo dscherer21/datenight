@@ -93,15 +93,6 @@
             <p>Please wait ...</p>
         </div>
     </div>
-
-    <!-- map modal -->
-    <div id="modMap" class="modal" style="height:720px; width:420px; padding:2px" >
-        <div class="modal-content" style="height:90%; width:90%; margin:0px; padding: 2px">
-                <span><h2>Map</h2></span><span id="closeModMap" class="close">&times;</span>
-                <div id="map" style="height:85%; width:100%"></div>
-        </div>
-    </div>
-    
     <script src="assets/javascript/restlocat.js"></script>
     <script src="assets/javascript/moviesearch.js"></script>
     <!--Hamburger Menu-->
@@ -138,8 +129,11 @@
             <p>Let's assume that you and your "SO (aka Significant Other)" would like to go out for a date night, however, you
                 have to continually switch back and forth between websites looking at showtimes and trying to find a place
                 to eat beforehand. Well, that's where
-                <span class="specialFont">DateNight</span> comes in! We take your location, movie you're interested in seeing, , and show you theaters that are showing your movie, and a list of restaurants nearby. Sound
-                Convenient to you? Enter your info below to get started!</p>
+                <span class="specialFont">DateNight</span> comes in! We take your location, movie you're interested in seeing, and type of food you
+                are looking for, and show you theaters that are showing your movie, a list of restaurants near the theater
+                that serve the type of food you chose, all within the distance to your location that you specified. Sounds
+                Convenient to you, and you are ready to get started? Then enter your City and State or Zip code, and click
+                the button below.</p>
             <!--Zip or city and State search form-->
             <form>
                 <div class="form-group">
@@ -206,14 +200,14 @@
         <div class="row">
             <div class="col-xs-12">
                 <!--Option 1-->
-                <div class="panel panel-default" id="theater1">
+                <div class="panel panel-default">
                     <div class="panel-heading">Option #1</div>
                     <div class="panel-body">
                         <h2>Movie Theater showing
-                            <span class="movieTitle" id="movie1">Movie Title shows Here</span>:</h2>
+                            <span class="movieTitle" id="title1">Movie Title shows Here</span>:</h2>
                         <h2>
                             <span class="theaterName" id="name1">The Name Here</span> at
-                            <span class="theaterAddress" id="address1">Theater Address Here</span>.</h2>
+                            <span class="theaterAddress" id="addr1">Theater Address Here</span>.</h2>
                         <h2>Movie Times:
                             <span class="movieTimes" id="times1">Movie Times Here</span>
                         </h2>
@@ -222,30 +216,30 @@
                     </div>
                 </div>
                 <!--Option 2-->
-                <div class="panel panel-default" id="theater2">
+                <div class="panel panel-default">
                     <div class="panel-heading">Option #2</div>
                     <div class="panel-body">
                         <h2>Movie Theater showing
-                            <span class="movieTitle"  id="movie2">Movie Title shows Here</span>:</h2>
+                            <span class="movieTitle" id="title2">Movie Title shows Here</span>:</h2>
                         <h2>
-                            <span class="theaterName"  id="name2">The Name Here</span> at
-                            <span class="theaterAddress" id="address2">Theater Address Here</span>.</h2>
+                            <span class="theaterName" id="name2">The Name Here</span> at
+                            <span class="theaterAddress" id="addr2">Theater Address Here</span>.</h2>
                         <h2>Movie Times:
-                            <span class="movieTimes"  id="times2">Movie Times Here</span>
+                            <span class="movieTimes" id="times2">Movie Times Here</span>
                         </h2>
                         <hr>
                         <h2>Top Restaurants near this theater</h2>
                     </div>
                 </div>
                 <!--Option 3-->
-                <div class="panel panel-default" id="theater3">
+                <div class="panel panel-default">
                     <div class="panel-heading">Option #3</div>
                     <div class="panel-body">
                         <h2>Movie Theater showing
-                            <span class="movieTitle"id="movie3">Movie Title shows Here</span>:</h2>
+                            <span class="movieTitle" id="title3">Movie Title shows Here</span>:</h2>
                         <h2>
                             <span class="theaterName" id="name3">The Name Here</span> at
-                            <span class="theaterAddress" id="address3">Theater Address Here</span>.</h2>
+                            <span class="theaterAddress" id="addr3">Theater Address Here</span>.</h2>
                         <h2>Movie Times:
                             <span class="movieTimes" id="times3">Movie Times Here</span>
                         </h2>
@@ -253,6 +247,7 @@
                         <h2>Top Restaurants near this theater</h2>
                     </div>
                 </div>
+                
             </div>
         </div>
     </main>
