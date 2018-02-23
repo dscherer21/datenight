@@ -16,6 +16,10 @@ var modalWaitMovieTimes = document.getElementById('modMovieTimes'); //movie time
 var modalMap = document.getElementById('modMap'); //map modal popup
 var closeModMap = document.getElementById("closeModMap");
 
+// When the user clicks on <span> (x), close the modal
+closeModMap.onclick = function () {
+    modalMap.style.display = "none";
+};
 
 var dataSrch = "";
 var dataSrchDone = false;
@@ -74,6 +78,26 @@ var theaterFoundType = {  //this is for every theater that was found
     },
     distToCenter: 0,
     travelTime: 0
+};
+
+var theaterMatchType = {  //this is for all of the matches for movies found
+    index: 0, //when doing a match do know which item on stack it is 
+    cinema_id: "",      //id to link to name of theater
+    theaterName: "",   //actual name of the theater
+    address: {
+        dispText: "",
+        houseNum: "",
+        street: "",
+        city: "",
+        state: "",
+        zipCode: "",
+        geoLocLat: 0,
+        geoLocLong: 0
+    },
+    distToCenter: 0,
+    travelTime: 0,
+    movieTimes: [],     //all the movie times for the movie
+    movieTimesStr: ""
 };
 
 var theaterObj = {   //main object for the whole theater
@@ -137,6 +161,7 @@ var theaterObj = {   //main object for the whole theater
 
     theaterStack: [],      //array of theaters  --- treat as stack
     theatersFoundStack: [],  //all the theaters found
+    theatersMatchStack: [], //
     cinemaIDstack: [],     //to look up unique cinema ID's
     numCinemaConv: 0,       //which cinema ID converting
     numSearchConv: 0,      //storage for the loop going thru the conversion
@@ -660,6 +685,46 @@ var theaterObj = {   //main object for the whole theater
                 };
             };
         } while (continLoop);
+    },
+
+    createTheatersMatchStack: function (movieStackIndex) {
+        //create theatersMatchStack of all theaters for a movie 
+        //used when picking by movie and want to know the theaters and times
+        //playing at
+
+        //user selected a movie from the movieStack
+        //so, need to find the movie and then find all the theaters that have that
+        //movie.  movieFoundStack will do that, listing movies by mo
+
+        //very similar to the evalPicClick
+
+        //first clear out the theatersFoundStack
+        for (var i = 0; i < this.theatersMatchStack.length; i++) {
+            this.theatersMatchStack, pop();
+        };
+        var matchRec = this.retMatchRecFromMovieStack(movieStackIndex);
+        var searchMovieID = matchRec.movie_id;
+        theaterObj.numMovieClickedIndex = parseInt(movieStackIndex);
+        theaterObj.doMoviesFoundList();
+        outputMoviesByMovieTime();
+
+        //so movies now are sorted by tiem across all cinemas
+        var tmStack = theaterObj.theatersMatchStack;    //output stack
+        var mfStack = theaterObj.movieFoundStack        //input stack
+        for( var i=0; i < mfStack.length; i++ ) {
+            //so now step thru all of the movies found and find match cinemas
+            var searchCinemaID = mfStack[i].cinema_id;
+            var numTFonstack;  //number of theaters found on stack 
+            var continF = true;
+            do {
+                //loop thru all the current recs and see if there is a match
+                if ( searchCinemaID === tmStack[i].cinema_id ) {
+                    //it matches so append to movie times
+                    tmStack[i].movieTimes.push( startTime_utc );
+                    tmStack[i].movieTimesStr += " " + moments
+                }
+            }  while ( continF );
+        };
     },
 
     EOR: ""    //place keeper so don't have to worry about stupid commas
@@ -1280,6 +1345,7 @@ var convertGeoToAddr = function () {
 
 var evalPicClick = function () {
     //a picture got clicked
+    //so user picked a movie and now needs the theaters associated with it
     var imgClicked = $(this).attr("data-image");
     modalWaitMovieTimes.style.display = "block";
     console.log("picture clicked " + imgClicked);
@@ -1292,8 +1358,11 @@ var evalPicClick = function () {
     outputMoviesByMovieTime();
 };
 
+
 var evalTheaterClick = function () {
     //theater option clicked
+    //so at this point know what movie want to see 
+    //and the theater going to
     var theaterRow = $(this).attr("data-theater-ind");
     console.log("theater #" + theaterRow);
     var mfStack = theaterObj.movieFoundStack;  //shorthand
@@ -1430,5 +1499,6 @@ window.onclick = function (event) {
         modalMap.style.display = "none";
     }
 }
+
 
 
