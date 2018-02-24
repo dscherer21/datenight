@@ -2,12 +2,13 @@
 //script files   
 
 var configData = {
-    theaterSearchDist: 5, //2 miles search earea
+    theaterSearchDist: 6, //2 miles search earea
     //    restaurantSearchDist: 2, //2 miles
     restaurantSearchDist: 2 * 1609.34,  //because google is in meters
     dispRichOutput: false,
     dispRichTestFalseGPS: false,   //punch in known values for GPS
-    keyAPIgoogle:  "AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk"
+    keyAPIgoogle: "AIzaSyAE03QBe5yDXRr1fzDvkWs9i_E_BIyCDhk",
+    keyAPIgoogleRich: "AIzaSyCrHKoPEISSoDAClePzcHVJVHB7G1-xb6s"
 };
 
 var modalWaitSearch1 = document.getElementById('modSearch1'); //earch all records
@@ -192,12 +193,10 @@ var theaterObj = {   //main object for the whole theater
             outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.qryGeoLocation + theaterObj.searchLoc.lat + "," + theaterObj.searchLoc.long + SP.qryDistance + theaterObj.searchLoc.dist;
             //outString = SP.urlPart1 + SP.urlShowTimes + SP.urlQryKey + SP.urlCountry + SP.urlBoundGeo;
             outString += SP.qryTimeFrom + timeFromStr + SP.qryTimeTo + timeToStr;
-            console.log(outString);
         };
         if (typeSearch == 2) {
             var cinemaID = theaterObj.cinemaIDstack[indexNum]; //pull from unique cinemaID's
             outString = SP.urlPart1 + SP.qryCinemas + cinemaID + SP.urlQryKey;
-            console.log(outString);
         };
         if (typeSearch == 3) {
             var movieID = theaterObj.movieIDvals[indexNum];
@@ -207,7 +206,6 @@ var theaterObj = {   //main object for the whole theater
             } else {
                 outString = SP.urlPart1 + SP.qryMovies + movieID + SP.urlQryKey + SP.urlLimit;
             }
-            console.log(outString);
         };
 
         return outString;
@@ -257,7 +255,6 @@ var theaterObj = {   //main object for the whole theater
         modalWaitSearch1.style.display = "block";
 
         theaterObj.theaterResponseToStack(dataTheaterSearch);
-        console.log("... done ....");
         //all of the theater records are in
         //need to now get all the movie Id
         var tStack = theaterObj.theaterStack;
@@ -313,7 +310,6 @@ var theaterObj = {   //main object for the whole theater
             })
                 .done(function (dataSrch, textStatus, jqXHR) {
                     console.log("HTTP Request Succeeded: " + jqXHR.status);
-                    console.log(dataSrch);
                     dataTheaterSearch = jQuery.extend(true, {}, dataSrch);
                     dataSrchDone = true;
                     theaterObj.doMovieSearchDone(indexNum);
@@ -416,8 +412,6 @@ var theaterObj = {   //main object for the whole theater
             for (var k = 0; k < theaterObj.theatersFoundStack.length; k++) {
                 theaterObj.theatersFoundStack.pop();
             };
-            console.log("theaters found stack ");
-            console.log(theaterObj.theatersFoundStack);
             theaterObj.doCinemaSearch(theaterObj.numCinemaConv);
         };
     },
@@ -441,7 +435,6 @@ var theaterObj = {   //main object for the whole theater
             })
                 .done(function (dataSrch, textStatus, jqXHR) {
                     console.log("HTTP Request Succeeded: " + jqXHR.status);
-                    console.log(dataSrch);
                     dataTheaterSearch = jQuery.extend(true, {}, dataSrch);
                     dataSrchDone = true;
                     theaterObj.doCinemaSearchDone(indexNum);
@@ -519,8 +512,6 @@ var theaterObj = {   //main object for the whole theater
         //this is parsing for iShowTimes
         //stack is NOT CLEARED prior to entering
         var stArray = responseIn.showtimes;  //showtimes array shortcut
-        console.log("response in");
-        console.log(stArray);
 
         var currTheaterRec = theaterObj.currTheater.theaterRec; //shortcut
         var endVal = stArray.length;
@@ -584,7 +575,6 @@ var theaterObj = {   //main object for the whole theater
             var mStack = theaterObj.movieStack;
             var loopContinue = true;
             do {
-                console.log("i=" + i);
                 if (mRec.title.toUpperCase() > mStack[i].title.toUpperCase()) {
                     if (i === (endVal - 1)) {
                         //at the end of the loop, so push at end
@@ -722,7 +712,6 @@ var theaterObj = {   //main object for the whole theater
             var searchCinemaID = mfStack[i].cinema_id;
             var numTM = 0;  //number of theaters found on stack 
             var continF = true;
-            console.log("loop i = " + i);
             continLoop = true;
             if (tmStack.length === 0) {
                 //there is nothing on the stack, so push in a new rec
@@ -746,13 +735,11 @@ var theaterObj = {   //main object for the whole theater
                 newRec.travelTime = newTheater.travelTime;
                 tmStack.push(newRec);
                 continLoop = false;
-                console.log("first one in loop");
             };
             while (continLoop === true) {
                 //loop thru all the current recs and see if there is a match
                 if (tmStack[numTM].cinema_id === searchCinemaID) {
                     //it matches so append to movie times
-                    console.log("pushing to stack");
                     tmStack[numTM].movieTimes.push(mfStack[i].startTime_utc);
                     tmStack[numTM].movieTimesStr += "  " + moment(mfStack[i].startTime_utc).format("h:mma");
                     continLoop = false;
@@ -1115,7 +1102,6 @@ var outputMoviesByMovieTime = function () {
     //move to local variables for show and tell purposes
     //theaterObj.retMatchRecFromMovieStack(mfStack[theaterObj.numMovieClickedIndex].movie_id);
     var movieRec = theaterObj.retMatchRecFromMovieStack(mStack[theaterObj.numMovieClickedIndex].movie_id);
-    console.log("back from match");
     var movieTitle = movieRec.title;
     var movieRunTime = movieRec.runtime;
     var movieSynopsis = movieRec.synopsis;
@@ -1195,7 +1181,6 @@ var outputMoviesByMovieTime = function () {
 
         newPtag = $("<p>");
 
-        console.log("output rec #" + i);
         //bring out as local variable for demo purposes
         var currCinemaRec = theaterObj.retMatchRecFromCinemaStack(mfStack[i].cinema_id);
         var nameStr = currCinemaRec.theaterName;
@@ -1406,8 +1391,8 @@ var showPosition = function (position) {
 
 var convertGeoToAddr = function () {
     var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
-    userPositionToAddressURL +=  numeral(theaterObj.searchLoc.lat).format("+0000.000000");
-    userPositionToAddressURL +=  "," + numeral(theaterObj.searchLoc.long).format("+0000.000000");
+    userPositionToAddressURL += numeral(theaterObj.searchLoc.lat).format("+0000.000000");
+    userPositionToAddressURL += "," + numeral(theaterObj.searchLoc.long).format("+0000.000000");
     userPositionToAddressURL += "&key=" + configData.keyAPIgoogle;
 
     $.ajax({
@@ -1487,8 +1472,6 @@ var checkAndConvertAddrToGeo = function () {
                 theaterObj.searchLoc.long = numeral(locLongIn).format("+0000.000000");
                 theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
 
-                console.log("Geo location = ");
-                console.log( response );
                 if (configData.dispRichOutput != true) {
                     $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
                 } else {
@@ -1513,51 +1496,57 @@ var doneConvertAddrToGeo = function () {
 };
 
 
-var geoDistCalcBetweenPoints = function ( geoPt1, geoPt2 ) {
+var geoDistCalcBetweenPoints = function (geoPt1, geoPt2) {
     //calculate the distance between search
     //geoPt1  is  { lat: , lng: }
     var Pt1 = {
-        lat: parseFloat( geoPt1.lat ),
-        lng: parseFloat( geoPt1.lng )
+        lat: parseFloat(geoPt1.lat),
+        lng: parseFloat(geoPt1.lng)
     };
     var Pt1_lat_Str = numeral(Pt1.lat).format("+0000.000000");
     var Pt1_lng_Str = numeral(Pt1.lng).format("+0000.000000");
     Pt1_str = Pt1_lat_Str + "," + Pt1_lng_Str;
-    
+    //Pt1_str = JSON.stringify( Pt1 );    
+
     var Pt2 = {
-        lat: parseFloat( geoPt2.lat ),
-        lng: parseFloat( geoPt2.lng )
+        lat: parseFloat(geoPt2.lat),
+        lng: parseFloat(geoPt2.lng)
     };
     var Pt2_lat_Str = numeral(Pt2.lat).format("+0000.000000");
     var Pt2_lng_Str = numeral(Pt2.lng).format("+0000.000000");
     Pt2_str = Pt2_lat_Str + "," + Pt2_lng_Str;
-    
-    var distMatrixURL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=";
-    distMatrixURL +=  Pt1_str + "&destinations=" + Pt2_str + "&key=";
-    distMatricURL += configData.keyAPIgoogle;
+ 
+    var service = new google.maps.DistanceMatrixService();
+    service.getDistanceMatrix(
+        {
+            origins: [Pt1_str],
+            destinations: [Pt2_str],
+            travelMode: google.maps.TravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.IMPERIAL,
+            avoidHighways: false,
+            avoidTolls: false
+        }, callbackGeoDist  );
+
+};
 
 
-    //var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
-    //userPositionToAddressURL +=  numeral(theaterObj.searchLoc.lat).format("+0000.000000");
-    //userPositionToAddressURL +=  "," + numeral(theaterObj.searchLoc.long).format("+0000.000000");
-    //userPositionToAddressURL += "&key=" + configData.keyAPIgoogle;
+var geoDistHomeToTheater = function (stackToUse, indexNum) {
+    //calculate the distance of the theater and home
+    //and store it
+    var searchStack;
 
-    $.ajax({
-        url: userPositionToAddressURL,
-        method: "GET"
-    }).then(function (response) {
-        theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
-        //store the orignal string to see if need to re-compute geo location
-        theaterObj.searchLoc.addrOriginalStr = theaterObj.searchLoc.addrSearchStr;
-        if (configData.dispRichOutput != true) {
-            $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
-        } else {
-            $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
-            $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
-        };
-        //turn off wait location
-        modalWaitLocation.style.display = "none";
-    });
+    var Pt1 = {
+        lat: theaterObj.searchLoc.lat,
+        lng: theaterObj.searchLoc.long
+    };
+
+    if (stackToUse === "TF") { searchStack = theaterObj.theatersFoundStack };
+    var Pt2 = {
+        lat: searchStack[indexNum].address.geoLocLat,
+        lng: searchStack[indexNum].address.geoLocLong
+    };
+
+    geoDistCalcBetweenPoints(Pt1, Pt2);
 };
 
 
@@ -1566,7 +1555,6 @@ var evalPicClick = function () {
     //so user picked a movie and now needs the theaters associated with it
     var imgClicked = $(this).attr("data-image");
     modalWaitMovieTimes.style.display = "block";
-    console.log("picture clicked " + imgClicked);
     var divOutput = $("#movieOutput");
     divOutput.html("");
     theaterObj.numMovieClickedIndex = parseInt(imgClicked);
@@ -1626,8 +1614,6 @@ var evalTheaterClick = function () {
         //in case need to do something special in the index.html file
         displayMap(true);
     };
-
-    console.log("(" + numeral(geoLat).format("+0000.000000") + "," + numeral(geoLong).format("+0000.000000") + ")");
 
 };
 
@@ -1734,4 +1720,30 @@ var hideLineTheater = function (tNum) {
     if (tNum == 2) { $("#theater2").css("display", "none"); };
     if (tNum == 3) { $("#theater3").css("display", "none"); };
 };
+
+
+
+
+function callbackGeoDist(response, status) {
+    if (status != google.maps.DistanceMatrixStatus.OK) {
+        alert ("error in calculating distance");
+        console.log("dist calc erro = ", err);
+    } else {
+        var origin = response.originAddresses[0];
+        var destination = response.destinationAddresses[0];
+        if (response.rows[0].elements[0].status === "ZERO_RESULTS") {
+            alert ( "no land roads between your points");
+            console.log("no land roads");
+        } else {
+            var distance = response.rows[0].elements[0].distance;
+            var distance_value = distance.value;
+            var miles = parseFloat(distance_value) / 1609.344;
+            console.log( "distance = "+ miles );
+            var timeInSecs = response.rows[0].elements[0].duration.value;
+            var timeInMin = parseFloat(timeInSecs) / 60.00;
+            console.log("time in min = " + timeInMin );
+        };
+    };
+};
+
 
