@@ -1495,7 +1495,6 @@ var checkAndConvertAddrToGeo = function () {
                     $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
                     $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
                 };
-                modalWaitLocation.style.display = "none";
                 doneConvertAddrToGeo();
             });
         }
@@ -1505,12 +1504,62 @@ var checkAndConvertAddrToGeo = function () {
     };
 };
 
+
 var doneConvertAddrToGeo = function () {
     //geo conversion is done, continue on
     //turn off wait location
     modalWaitLocation.style.display = "none";
     theaterObj.doSearchInitial();
 };
+
+
+var geoDistCalcBetweenPoints = function ( geoPt1, geoPt2 ) {
+    //calculate the distance between search
+    //geoPt1  is  { lat: , lng: }
+    var Pt1 = {
+        lat: parseFloat( geoPt1.lat ),
+        lng: parseFloat( geoPt1.lng )
+    };
+    var Pt1_lat_Str = numeral(Pt1.lat).format("+0000.000000");
+    var Pt1_lng_Str = numeral(Pt1.lng).format("+0000.000000");
+    Pt1_str = Pt1_lat_Str + "," + Pt1_lng_Str;
+    
+    var Pt2 = {
+        lat: parseFloat( geoPt2.lat ),
+        lng: parseFloat( geoPt2.lng )
+    };
+    var Pt2_lat_Str = numeral(Pt2.lat).format("+0000.000000");
+    var Pt2_lng_Str = numeral(Pt2.lng).format("+0000.000000");
+    Pt2_str = Pt2_lat_Str + "," + Pt2_lng_Str;
+    
+    var distMatrixURL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=";
+    distMatrixURL +=  Pt1_str + "&destinations=" + Pt2_str + "&key=";
+    distMatricURL += configData.keyAPIgoogle;
+
+
+    //var userPositionToAddressURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    //userPositionToAddressURL +=  numeral(theaterObj.searchLoc.lat).format("+0000.000000");
+    //userPositionToAddressURL +=  "," + numeral(theaterObj.searchLoc.long).format("+0000.000000");
+    //userPositionToAddressURL += "&key=" + configData.keyAPIgoogle;
+
+    $.ajax({
+        url: userPositionToAddressURL,
+        method: "GET"
+    }).then(function (response) {
+        theaterObj.searchLoc.addrSearchStr = response.results[0].formatted_address;
+        //store the orignal string to see if need to re-compute geo location
+        theaterObj.searchLoc.addrOriginalStr = theaterObj.searchLoc.addrSearchStr;
+        if (configData.dispRichOutput != true) {
+            $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
+        } else {
+            $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+            $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
+        };
+        //turn off wait location
+        modalWaitLocation.style.display = "none";
+    });
+};
+
 
 var evalPicClick = function () {
     //a picture got clicked
