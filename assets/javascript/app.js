@@ -30,7 +30,7 @@ var displayMovies = function () {
         //gives the first card of the carousel a class of active to make it functional
         if (i === 0) {
             $(movieCardActive).addClass('active');
-        }
+        };
         //
         $(movieCardActive).appendTo(movieDiv);
     };
@@ -71,6 +71,9 @@ $(document).ready(function () {
         var theaterAddress = theaterObj.theatersMatchStack[0].address.dispText + ' ' + theaterObj.theatersMatchStack[0].address.city + ', ' + theaterObj.theatersMatchStack[0].address.state + ' ' + theaterObj.theatersMatchStack[0].address.zipCode;
         //storing Movies Times
         var movieTimes = theaterObj.theatersMatchStack[0].movieTimesStr;
+        //storing Distance
+        var distance = theaterObj.theatersMatchStack[0].distToCenter;
+        var travelToTime = theaterObj.theatersMatchStack[0].travelToTime;
         //replacing the theatername field with the Theater 
         $("#movie1").text(chosenMovieName);
         //Name
@@ -79,6 +82,10 @@ $(document).ready(function () {
         $('#address1').text(theaterAddress);
         //replacing the movieTimes field with Movie Times
         $('#times1').text(movieTimes);
+        //format and output the distance to the screen
+        var distanceString = "Distance : " + numeral(distance.toString()).format("0.0") + " miles";
+        distanceString += " " + numeral(travelToTime.toString()).format("0.0") + " minutes";
+        $('#dist1').text(distanceString);
 
         if (theaterObj.theatersMatchStack.length > 1) {
             //var chosenMovieName = theaterObj.movieStack[checkboxNumber].title;
@@ -88,6 +95,9 @@ $(document).ready(function () {
             var theaterAddress = theaterObj.theatersMatchStack[1].address.dispText + ' ' + theaterObj.theatersMatchStack[1].address.city + ', ' + theaterObj.theatersMatchStack[1].address.state + ' ' + theaterObj.theatersMatchStack[1].address.zipCode;
             //storing Movies Times
             var movieTimes = theaterObj.theatersMatchStack[1].movieTimesStr;
+            //storing Distance
+            var distance = theaterObj.theatersMatchStack[1].distToCenter;
+            var travelToTime = theaterObj.theatersMatchStack[1].travelToTime;
             //replacing the theatername field with the Theater 
             $("#movie2").text(chosenMovieName);
             //Name
@@ -96,7 +106,10 @@ $(document).ready(function () {
             $('#address2').text(theaterAddress);
             //replacing the movieTimes field with Movie Times
             $('#times2').text(movieTimes);
-            //console.log(theaterObj);
+            //format and output the distance to the screen
+            var distanceString = "Distance : " + numeral(distance.toString()).format("0.0") + " miles";
+            distanceString += " " + numeral(travelToTime.toString()).format("0.0") + " minutes";
+            $('#dist2').text(distanceString);
         } else {
             hideLineTheater(2);  //this function uses option # to hide it
             //line #3 must be blank also
@@ -112,6 +125,9 @@ $(document).ready(function () {
             //storing Movies Times
             var movieTimes = theaterObj.theatersMatchStack[2].movieTimesStr;
             //replacing the theatername field with the Theater 
+            //storing Distance
+            var distance = theaterObj.theatersMatchStack[2].distToCenter;
+            var travelToTime = theaterObj.theatersMatchStack[2].travelToTime;
             $("#movie3").text(chosenMovieName);
             //Name
             $('#name3').text(theaterName);
@@ -119,7 +135,10 @@ $(document).ready(function () {
             $('#address3').text(theaterAddress);
             //replacing the movieTimes field with Movie Times
             $('#times3').text(movieTimes);
-            //console.log(theaterObj);
+            //format and output the distance to the screen
+            var distanceString = "Distance : " + numeral(distance.toString()).format("0.0") + " miles";
+            distanceString += " " + numeral(travelToTime.toString()).format("0.0") + " minutes";
+            $('#dist3').text(distanceString);
         } else {
             hideLineTheater(3);  //this function uses option # to hide it
         };
@@ -138,8 +157,8 @@ $(document).ready(function () {
         //Console log both to make sure that they are working
         console.log(theaterObj.addrSearchStr);
         console.log(theaterObj.searchLoc.dist);
-        testSearch();
-        displayMovies();
+        //
+        startSearches();
     });
 
 

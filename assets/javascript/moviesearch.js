@@ -80,7 +80,8 @@ var theaterFoundType = {  //this is for every theater that was found
         geoLocLong: 0
     },
     distToCenter: 0,
-    travelTime: 0
+    travelToTime: 0,
+    travelFromTime: 0
 };
 
 var theaterMatchType = {  //this is for all of the matches for movies found
@@ -98,7 +99,8 @@ var theaterMatchType = {  //this is for all of the matches for movies found
         geoLocLong: 0
     },
     distToCenter: 0,
-    travelTime: 0,
+    travelToTime: 0,
+    travelFromTime: 0,
     movieTimes: [],     //all the movie times for the movie
     movieTimesStr: ""
 };
@@ -118,7 +120,8 @@ var theaterObj = {   //main object for the whole theater
             geoLocLong: 0,
         },
         distToCenter: 0,
-        travelTime: 0,
+        travelToTime: 0,
+        travelFromTime: 0,
         url: "",
         telephone: "",
         movie: {
@@ -161,6 +164,14 @@ var theaterObj = {   //main object for the whole theater
         dist: 0.0,
         addrSearchStr: "",
         addrOriginalStr: ""   //used when first call the routine
+    },
+
+    geoLookup: {
+        recIndexOn: 0,
+        recIndexEnd: 0,
+        currStackWorkingOn: "",
+        geoDistFound: 0.0,
+        geoTimeTravel: 0.0
     },
 
     theaterStack: [],      //array of theaters  --- treat as stack
@@ -471,6 +482,8 @@ var theaterObj = {   //main object for the whole theater
         ctfRec.url = dataTheaterSearch.cinema.website;
         ctfRec.telephone = dataTheaterSearch.cinema.telephone;
         ctfRec.distToCenter = 0;
+        ctfRec.travelToTime = 0;
+        ctfRec.travelFromTime = 0;
 
         var newRec = jQuery.extend(true, {}, ctfRec);
         theaterObj.theatersFoundStack.push(newRec);
@@ -480,6 +493,45 @@ var theaterObj = {   //main object for the whole theater
             //do another search
             theaterObj.doCinemaSearch(theaterObj.numCinemaConv);
         } else {
+            theaterObj.geoDistHomeToTheater_all_start();
+        };
+    },
+
+    geoDistHomeToTheater_all_start: function () {
+        var stackToUse = "TF";
+        var searchStack;
+        var indexNum = 0;
+        if (stackToUse === "TF") {
+            //all of the theatersFoundStack
+            searchStack = theaterObj.theatersFoundStack;
+        };
+        theaterObj.geoLookup.recIndexEnd = searchStack.length;
+        theaterObj.geoLookup.recIndexOn = 0;
+        theaterObj.geoLookup.currStackWorkingOn = stackToUse;
+        geoDistHomeToTheater(stackToUse, indexNum)
+    },
+
+    geoDistHomeToTheater_next: function (stackToUse) {
+        var currStack;
+        var stackToUse = theaterObj.geoLookup.currStackWorkingOn;
+        var indexWorkingOn = theaterObj.geoLookup.recIndexOn;
+
+        if (stackToUse === "TF") {
+            searchStack = theaterObj.theatersFoundStack;
+            theaterObj.theatersFoundStack[indexWorkingOn].distToCenter = theaterObj.geoLookup.geoDistFound;
+            theaterObj.theatersFoundStack[indexWorkingOn].travelToTime = theaterObj.geoLookup.geoTimeTravel;
+            theaterObj.theatersFoundStack[indexWorkingOn].travelFromTime = theaterObj.geoLookup.geoTimeTravel;
+        };
+
+        //loop back and get the next one
+        theaterObj.geoLookup.recIndexOn++;
+        if (theaterObj.geoLookup.recIndexOn < theaterObj.geoLookup.recIndexEnd) {
+            //where to go next
+            if (stackToUse === "TF") {
+                geoDistHomeToTheater("TF", theaterObj.geoLookup.recIndexOn)
+            };
+        } else {
+            //where to go after found all the distances
             theaterObj.numCinemaConv = 0;
             modalWaitSearch3.style.display = "none";
             if (configData.dispRichOutput === true) {
@@ -488,9 +540,9 @@ var theaterObj = {   //main object for the whole theater
             } else {
                 displayMovies();
             };
-            //theaterObj.doSearch(3, theaterObj.numSearchConv);
         };
     },
+
 
     clearStack: function () {
         //clears all the current values in the array
@@ -732,7 +784,9 @@ var theaterObj = {   //main object for the whole theater
                 newRec.address.geoLocLat = newTheater.address.geoLocLat;
                 newRec.address.geoLocLong = newTheater.address.geoLocLong;
                 newRec.distToCenter = newTheater.distToCenter;
-                newRec.travelTime = newTheater.travelTime;
+                newRec.travelToTime = newTheater.travelToTime;
+                newRec.travelFromTime = newTheater.travelFromTime;
+
                 tmStack.push(newRec);
                 continLoop = false;
             };
@@ -765,19 +819,23 @@ var theaterObj = {   //main object for the whole theater
                         newRec.address.geoLocLat = newTheater.address.geoLocLat;
                         newRec.address.geoLocLong = newTheater.address.geoLocLong;
                         newRec.distToCenter = newTheater.distToCenter;
-                        newRec.travelTime = newTheater.travelTime;
+                        newRec.travelToTime = newTheater.travelToTime;
+                        newRec.travelFromTime = newTheater.travelFromTime;
                         tmStack.push(newRec);
                         continLoop = false;
                     };
                 };
             };
         };
+        //now sort the stack
+        tmStack.sort(function (a, b) { return a.distToCenter - b.distToCenter });
+
     },
 
     EOR: ""    //place keeper so don't have to worry about stupid commas
 };
 
-var testSearch = function () {
+var startSearches = function () {
     //entry point to do a search
     //global function outside of the theaterObj
     theaterObj.clearStack();
@@ -1008,7 +1066,7 @@ var outputTheaters = function () {
         var geoLat = tfStack[i].address.geoLocLat;
         var geoLong = tfStack[i].address.geoLocLong;
         var distToCenter = tfStack[i].distToCenter;
-
+        var travelToTime = tfStack[i].travelToTime;
 
         var H3tag = $("<h4>");
         $(H3tag).css("line-height", "1.0");
@@ -1061,7 +1119,8 @@ var outputTheaters = function () {
         $(H4tag).css("line-height", "1.0");
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
-        var line5str = "Distance away: " + distToCenter;
+        var line5str = "Distance : " + numeral(distToCenter.toString()).format("0.0") + " miles";
+        line5str += " " + numeral(travelToTime.toString()).format("0.0") + " minutes";
         $(H4tag).text(line5str);
         $(H4tag).appendTo(newPtag);
         var brTag = $("<br/>");
@@ -1190,7 +1249,8 @@ var outputMoviesByMovieTime = function () {
         var zipcode = currCinemaRec.address.zipCode;
         var geoLat = currCinemaRec.address.geoLocLat;
         var geoLong = currCinemaRec.address.geoLocLong;
-        var distToCenter = currCinemaRec.distToCenter;
+        var distToCenter = currCinemaRec.distToCenter.toString();
+        var travelTime = currCinemaRec.travelToTime.toString();
 
 
         H4tag = $("<h4>");
@@ -1241,6 +1301,16 @@ var outputMoviesByMovieTime = function () {
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
         $(H4tag).text("(" + numeral(geoLat).format("+0000.000000") + "," + numeral(geoLong).format("+0000.000000") + ")");
+        $(H4tag).appendTo(newPtag);
+        var brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
+        //put in the distance and times now
+        H4tag = $("<h5>");
+        $(H4tag).css("line-height", "1.0");
+        $(H4tag).css("margin", "0px");
+        $(H4tag).css("padding", "0px");
+        $(H4tag).text("" + numeral(distToCenter).format("0.0") + " miles" + " " + numeral(travelTime).format("0.0") + " min" + " away");
         $(H4tag).appendTo(newPtag);
         var brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
@@ -1515,7 +1585,7 @@ var geoDistCalcBetweenPoints = function (geoPt1, geoPt2) {
     var Pt2_lat_Str = numeral(Pt2.lat).format("+0000.000000");
     var Pt2_lng_Str = numeral(Pt2.lng).format("+0000.000000");
     Pt2_str = Pt2_lat_Str + "," + Pt2_lng_Str;
- 
+
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
         {
@@ -1525,9 +1595,10 @@ var geoDistCalcBetweenPoints = function (geoPt1, geoPt2) {
             unitSystem: google.maps.UnitSystem.IMPERIAL,
             avoidHighways: false,
             avoidTolls: false
-        }, callbackGeoDist  );
+        }, geoDistResponded);
 
 };
+
 
 
 var geoDistHomeToTheater = function (stackToUse, indexNum) {
@@ -1541,13 +1612,17 @@ var geoDistHomeToTheater = function (stackToUse, indexNum) {
     };
 
     if (stackToUse === "TF") { searchStack = theaterObj.theatersFoundStack };
+
     var Pt2 = {
         lat: searchStack[indexNum].address.geoLocLat,
         lng: searchStack[indexNum].address.geoLocLong
     };
 
+    theaterObj.geoLookup.recIndexOn = indexNum;
+    theaterObj.geoLookup.currStackWorkingOn = stackToUse;
     geoDistCalcBetweenPoints(Pt1, Pt2);
 };
+
 
 
 var evalPicClick = function () {
@@ -1594,7 +1669,8 @@ var evalTheaterClick = function () {
     ctRec.theaterName = currCinemaRec.theaterName;
     ctRec.distToCenter = currCinemaRec.distToCenter;
     ctRec.telephone = currCinemaRec.telephone;
-    ctRec.travelTime = currCinemaRec.travelTime;
+    ctRec.travelToTime = currCinemaRec.travelToTime;
+    ctRec.travelFromTime = currCinemaRec.travelFromTime;
     ctRec.url = currCinemaRec.url;
     ctRec.address.city = currCinemaRec.address.city;
     ctRec.address, dispText = currCinemaRec.address.dispText;
@@ -1715,6 +1791,7 @@ window.onclick = function (event) {
     }
 };
 
+
 var hideLineTheater = function (tNum) {
     //hide a theater
     if (tNum == 2) { $("#theater2").css("display", "none"); };
@@ -1723,25 +1800,31 @@ var hideLineTheater = function (tNum) {
 
 
 
-
-function callbackGeoDist(response, status) {
+var geoDistResponded = function (response, status) {
     if (status != google.maps.DistanceMatrixStatus.OK) {
-        alert ("error in calculating distance");
+        alert("error in calculating distance");
         console.log("dist calc erro = ", err);
     } else {
         var origin = response.originAddresses[0];
         var destination = response.destinationAddresses[0];
         if (response.rows[0].elements[0].status === "ZERO_RESULTS") {
-            alert ( "no land roads between your points");
+            alert("no land roads between your points");
             console.log("no land roads");
         } else {
             var distance = response.rows[0].elements[0].distance;
             var distance_value = distance.value;
             var miles = parseFloat(distance_value) / 1609.344;
-            console.log( "distance = "+ miles );
+            console.log("distance = " + miles);
+            theaterObj.geoLookup.geoDistFound = miles;
             var timeInSecs = response.rows[0].elements[0].duration.value;
             var timeInMin = parseFloat(timeInSecs) / 60.00;
-            console.log("time in min = " + timeInMin );
+            theaterObj.geoLookup.geoTimeTravel = timeInMin;
+            console.log("time in min = " + timeInMin);
+
+            //now figure out what to do next
+            if (theaterObj.geoLookup.currStackWorkingOn === "TF") {
+                theaterObj.geoDistHomeToTheater_next("TF");
+            };
         };
     };
 };
