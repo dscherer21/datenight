@@ -60,9 +60,11 @@ var movieFoundType = { //movies found
     startTime_ts: 0, //time stamp
     runTime_min: 0, //in minutes
     finishTime_ts: 0,
-    distTravel: 0,
-    timeTravel: 0,
-    timeToLeave: 0,
+    distToCenter: 0,
+    travelToTime: 0,
+    travelFromTime: 0,
+    timeToLeave: 0,  //time that need to leave calc backwards
+    timeBack: 0     //time back home
 };
 
 var theaterFoundType = {  //this is for every theater that was found
@@ -277,18 +279,22 @@ var theaterObj = {   //main object for the whole theater
             theaterObj.genresStack.pop();
         };
 
-        //push the first one
-        theaterObj.movieIDvals.push(tStack[0].theaterRec.movie_id);
         //loop thru and load single occurance of each movie ID
         for (var i = 0; i < numRecs; i++) {
-            if (tStack[i].theaterRec.movie_id == null) {
+            if (tStack[i].theaterRec.movie_id == null || tStack[i].theaterRec.movie_id == undefined) {
                 //sometimes searches come back with nothing
                 console.log("null at " + i);
             } else {
-                //loop thru all and add single movie_id's to array to search later
-                if (theaterObj.movieIDvals.indexOf(tStack[i].theaterRec.movie_id) < 0) {
-                    //the movie id has not been used
+                //only check if not the first record
+                //if first record, just push the record
+                if (theaterObj.movieIDvals.length === 0) {
                     theaterObj.movieIDvals.push(tStack[i].theaterRec.movie_id);
+                } else {
+                    //loop thru all and add single movie_id's to array to search later
+                    if (theaterObj.movieIDvals.indexOf(tStack[i].theaterRec.movie_id) < 0) {
+                        //the movie id has not been used
+                        theaterObj.movieIDvals.push(tStack[i].theaterRec.movie_id);
+                    };
                 };
             };
         };
@@ -682,10 +688,22 @@ var theaterObj = {   //main object for the whole theater
                 cfRec.cinema_id = tStack[i].theaterRec.cinema_id;
                 cfRec.startTime_utc = tStack[i].theaterRec.start_at;
                 cfRec.startTime_ts = parseInt(moment(tStack[i].theaterRec.start_at).unix());
+
                 //get the rest of the record
                 var matchMovieRec = theaterObj.retMatchRecFromMovieStack(searchMovieID);
                 cfRec.runTime_min = matchMovieRec.runtime;
                 cfRec.finishTime_ts = parseInt(moment(cfRec.startTime_utc).add(cfRec.runTime_min, "minutes").unix());
+
+                //rpb working ... calculate the time travel
+                var travelObj = theaterObj.retTravelTimeFromTheatersFoundStack(cfRec.cinema_id);
+                cfRec.distToCenter = travelObj.distToCenter;
+                //the travel time is in seconds as is the start time
+                //so the time that should leave should be simple subtration
+                cfRec.travelToTime = travelObj.travelToTime;
+                cfRec.travelFromTime = travelObj.travelFromTime;
+                cfRec.timeToLeave = cfRec.startTime_ts - parseInt(travelObj.travelToTime * 60.00);
+                cfRec.timeBack = cfRec.finishTime_ts + parseInt(travelObj.travelToTime * 60.00);
+
                 //now that the cfRec is filled, make a copy and pop to movieFoundStack
                 var copyOfRec = jQuery.extend(true, {}, cfRec);
                 mfStack.push(copyOfRec);
@@ -733,6 +751,33 @@ var theaterObj = {   //main object for the whole theater
                 };
             };
         } while (continLoop);
+    },
+
+    retTravelTimeFromTheatersFoundStack: function (cinemaIDmatch) {
+        //returns the distance and time for locations
+        var outputObj;
+        var tfStack = theaterObj.theatersFoundStack;
+        var iCurrRec = 0;
+        var continLoop = true;
+        do {
+            if (tfStack[iCurrRec].cinema_id === cinemaIDmatch) {
+                //there is a match
+                outputObj = {
+                    distToCenter: tfStack[iCurrRec].distToCenter,
+                    travelToTime: tfStack[iCurrRec].travelToTime,
+                    travelFromTime: tfStack[iCurrRec].travelFromTime
+                };
+                continLoop = false;
+            } else {
+                //step thru the loop now
+                iCurrRec++;
+                if (iCurrRec >= tfStack.length) {
+                    outputObj = null;
+                    continLoop = false;
+                };
+            };
+        } while (continLoop === true);
+        return outputObj;
     },
 
     createTheatersMatchStack: function (movieStackIndex) {
@@ -1296,21 +1341,35 @@ var outputMoviesByMovieTime = function () {
         var brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
 
-        H4tag = $("<h5>");
-        $(H4tag).css("line-height", "1.0");
-        $(H4tag).css("margin", "0px");
-        $(H4tag).css("padding", "0px");
-        $(H4tag).text("(" + numeral(geoLat).format("+0000.000000") + "," + numeral(geoLong).format("+0000.000000") + ")");
-        $(H4tag).appendTo(newPtag);
-        var brTag = $("<br/>");
-        $(brTag).appendTo(newPtag);
-
         //put in the distance and times now
         H4tag = $("<h5>");
         $(H4tag).css("line-height", "1.0");
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
         $(H4tag).text("" + numeral(distToCenter).format("0.0") + " miles" + " " + numeral(travelTime).format("0.0") + " min" + " away");
+        $(H4tag).appendTo(newPtag);
+        var brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
+        //travel from time
+        H4tag = $("<h5>");
+        $(H4tag).css("line-height", "1.0");
+        $(H4tag).css("margin", "0px");
+        $(H4tag).css("padding", "0px");
+        $(H4tag).text("trip details: ");
+        $(H4tag).appendTo(newPtag);
+        var brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
+        H4tag = $("<h5>");
+        $(H4tag).css("line-height", "1.0");
+        $(H4tag).css("margin", "0px");
+        $(H4tag).css("padding", "0px");
+        var tripDetails = "leave: " + moment.unix(mfStack[i].timeToLeave).format("h:mma") + "  movie: ";
+        tripDetails += moment(mfStack[i].startTime_utc).format("h:mma") + "-";
+        tripDetails += moment.unix(mfStack[i].finishTime_ts).format("h:mma");
+        tripDetails += "  home at: " + moment.unix(mfStack[i].timeBack).format("h:mma");
+        $(H4tag).text(tripDetails);
         $(H4tag).appendTo(newPtag);
         var brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
