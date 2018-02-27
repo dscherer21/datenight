@@ -913,28 +913,30 @@ var outputMovies = function () {
     //outputs search to movies
     var divOutput = $("#movieOutput");
     divOutput.html("");
+    var divTop = $("#top-panel-div");
+    divTop.html("");
+    var divBottom = $("#bottom-panel-div");
+    divBottom.html("");
     var mStack = theaterObj.movieStack;
     var numFound = mStack.length;
 
     //findings heading
     var newRow = $("<div>");
     $(newRow).addClass("row");
-    var newPtag = $("<p>");
-    var H3tag = $("<h3>");
-    var findingsStr = "What was found:";
-    $(H3tag).text(findingsStr);
-    $(H3tag).appendTo(newPtag);
-    $(newPtag).appendTo(newRow);
-
+    //var newPtag = $("<p>");
     var H4tag = $("<h4>");
-    findingsStr = "Num of movies = " + numFound;
-    findingsStr += " in " + theaterObj.cinemaIDstack.length + " theaters.";
+    H4tag.css("margin", "3px");
+    var findingsStr = "found: ";
+    // $(H3tag).text(findingsStr);
+    // $(H3tag).appendTo(newRow);
+    // $(newPtag).appendTo(newRow);
+
+    // var H4tag = $("<h4>");
+    findingsStr += numFound;
+    findingsStr += " movies in " + theaterObj.cinemaIDstack.length + " theaters.";
+    findingsStr += " covering " + theaterObj.genresStack.length + " genres.";
     $(H4tag).text(findingsStr);
-    $(H4tag).appendTo(newPtag);
-    H4tag = $("<h4>");
-    findingsStr = "Num of genres = " + theaterObj.genresStack.length;
-    $(H4tag).text(findingsStr);
-    $(H4tag).appendTo(newPtag);
+    $(H4tag).appendTo(newRow);
 
     theaterObj.genresStack.sort();
     newPtag = $("<p>");
@@ -948,8 +950,17 @@ var outputMovies = function () {
     $(newPtag).text(genresFoundStr);
     $(newPtag).appendTo(newRow);
 
-    $(newRow).appendTo(divOutput);
+    $(newRow).appendTo(divTop);
 
+    //put heading in the movies found
+    var newRow = $("<div>");
+    $(newRow).addClass("row");
+    H4tag = $("<h4>");
+    H4tag.css("margin", "3px");
+    var outputStr = "click on a movie picture to select";
+    $(H4tag).text(outputStr);
+    $(H4tag).appendTo(newRow);
+    $(newRow).appendTo(divOutput);
 
     for (var i = 0; i < numFound; i++) {
         //loop thru the all movies found
@@ -1021,7 +1032,7 @@ var outputMovies = function () {
         var divPanelBody = $("<div>");
         $(divPanelBody).addClass("panel-body");
         $(divPanelBody).addClass("panelMinPadding");
-        $(imgTag).appendTo(divPanelBody);  //iamge goes onto the panel body
+        $(imgTag).appendTo(divPanelBody);  //imsage goes onto the panel body
         $(divPanelBody).appendTo(divPanel);
 
         $(divPanel).appendTo(newRow);
@@ -1076,7 +1087,8 @@ var outputMovies = function () {
 
 var outputTheaters = function () {
     //outputs search to movies
-    var divOutput = $("#movieOutput");
+    var divOutput = $("#bottom-panel-div");
+    divOutput.html("");
     //divOutput.html("");
     var tfStack = theaterObj.theatersFoundStack;
     var numFound = tfStack.length;
@@ -1153,17 +1165,6 @@ var outputTheaters = function () {
         $(H4tag).css("line-height", "1.0");
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
-        var line4str = "Geo loc: (" + geoLat + " , " + geoLong + " )";
-        $(H4tag).text(line4str);
-        $(H4tag).appendTo(newPtag);
-        var brTag = $("<br/>");
-        $(brTag).css("line-height", "2px");
-        $(brTag).appendTo(newPtag);
-
-        H4tag = $("<h5>");
-        $(H4tag).css("line-height", "1.0");
-        $(H4tag).css("margin", "0px");
-        $(H4tag).css("padding", "0px");
         var line5str = "Distance : " + numeral(distToCenter.toString()).format("0.0") + " miles";
         line5str += " " + numeral(travelToTime.toString()).format("0.0") + " minutes";
         $(H4tag).text(line5str);
@@ -1197,7 +1198,11 @@ var outputMoviesByMovieTime = function () {
     //outputs search to movies
     var divOutput = $("#movieOutput");
     divOutput.html("");
-    var mfStack = theaterObj.movieFoundStack;  //shorthand
+    var divTop = $("#top-panel-div");
+    divTop.html("");
+    var divBottom = $("#bottom-panel-div");
+    divBottom.html("");
+   var mfStack = theaterObj.movieFoundStack;  //shorthand
     var mStack = theaterObj.movieStack;  //shorthand
     var numFound = mfStack.length;
     //sort the movies by start time
@@ -1253,9 +1258,10 @@ var outputMoviesByMovieTime = function () {
     var brTag = $("<br/>");
     $(brTag).appendTo(newPtag);
     $(newPtag).appendTo(newRow);        //hor row
-    $(newRow).appendTo(divOutput);
+    $(newRow).appendTo(divTop);
     newRow = $("<div>");
     $(newRow).addClass("row");
+    $(newRow).appendTo(divTop);
 
     //findings heading
     newPtag = $("<p>");
@@ -1264,6 +1270,9 @@ var outputMoviesByMovieTime = function () {
     $(H3tag).text(findingsStr);
     $(H3tag).appendTo(newPtag);
     $(newPtag).appendTo(newRow);
+    H3tag = $("<h4>");
+    $(H3tag).text("click on a showtime for map");
+    $(H3tag).appendTo(newRow);
 
     $(newRow).appendTo(divOutput);
     newRow = $("<div>");
@@ -1283,7 +1292,6 @@ var outputMoviesByMovieTime = function () {
         $(newRow).addClass("click-theater");
         $(newRow).attr("data-theater-ind", i);  //index to theater stack 
 
-        newPtag = $("<p>");
 
         //bring out as local variable for demo purposes
         var currCinemaRec = theaterObj.retMatchRecFromCinemaStack(mfStack[i].cinema_id);
@@ -1298,18 +1306,41 @@ var outputMoviesByMovieTime = function () {
         var travelTime = currCinemaRec.travelToTime.toString();
 
 
+        //        newPtag = $("<p>");
         H4tag = $("<h4>");
         $(H4tag).css("line-height", "1.0");
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
         var line3str = "" + moment(mfStack[i].startTime_utc).format("h:mm a");
-        line3str += " to " + moment.unix(mfStack[i].finishTime_ts).format("h:mm a");
         $(H4tag).text(line3str);
-        $(H4tag).appendTo(newPtag);
+        //        $(H4tag).appendTo(newPtag);
+        //$(newPtag).appendTo(newRow);
+
+        var newSpanTag = $("<span>");
+        //        H4tag = $("<h4>");
+        //        $(H4tag).css("line-height", "1.0");
+        //        $(H4tag).css("margin", "0px");
+        //        $(H4tag).css("padding", "0px");
+        $(newSpanTag).css("font-weight", "normal");
+        line3str = "  show, ends at "
+        $(newSpanTag).text(line3str);
+        $(newSpanTag).appendTo(H4tag);
+        //        $(newSpanTag).appendTo(newPtag);
+
+        newSpanTag = $("<span>");
+        //        H4tag = $("<h4>");
+        //        $(H4tag).css("line-height", "1.0");
+        //        $(H4tag).css("margin", "0px");
+        //        $(H4tag).css("padding", "0px");
+        line3str = moment.unix(mfStack[i].finishTime_ts).format("h:mm a");
+        $(newSpanTag).text(line3str);
+        $(newSpanTag).appendTo(H4tag);
         var brTag = $("<br/>");
         $(brTag).css("line-height", "2px");
-        $(brTag).appendTo(newPtag);
+        $(brTag).appendTo(H4tag);
+        $(H4tag).appendTo(newRow);
 
+        newPtag = $("<p>");
         var H3tag = $("<h4>");
         $(H3tag).css("line-height", "1.0");
         $(H3tag).css("margin", "0px");
@@ -1338,6 +1369,20 @@ var outputMoviesByMovieTime = function () {
         $(H4tag).css("padding", "0px");
         $(H4tag).text(city + " , " + state + " " + zipcode);
         $(H4tag).appendTo(newPtag);
+        brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+        brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+        brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
+        //travel from time
+        H4tag = $("<h5>");
+        $(H4tag).css("line-height", "1.0");
+        $(H4tag).css("margin", "0px");
+        $(H4tag).css("padding", "0px");
+        $(H4tag).text("trip details: ");
+        $(H4tag).appendTo(newPtag);
         var brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
 
@@ -1351,25 +1396,47 @@ var outputMoviesByMovieTime = function () {
         var brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
 
-        //travel from time
         H4tag = $("<h5>");
         $(H4tag).css("line-height", "1.0");
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
-        $(H4tag).text("trip details: ");
+        var tripDetails = "leave: " + moment.unix(mfStack[i].timeToLeave).format("h:mma");
+        $(H4tag).text(tripDetails);
         $(H4tag).appendTo(newPtag);
-        var brTag = $("<br/>");
+        brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
 
         H4tag = $("<h5>");
         $(H4tag).css("line-height", "1.0");
         $(H4tag).css("margin", "0px");
         $(H4tag).css("padding", "0px");
-        var tripDetails = "leave: " + moment.unix(mfStack[i].timeToLeave).format("h:mma") + "  movie: ";
-        tripDetails += moment(mfStack[i].startTime_utc).format("h:mma") + "-";
-        tripDetails += moment.unix(mfStack[i].finishTime_ts).format("h:mma");
-        tripDetails += "  home at: " + moment.unix(mfStack[i].timeBack).format("h:mma");
+        tripDetails = "movie starts: " + moment(mfStack[i].startTime_utc).format("h:mma");
         $(H4tag).text(tripDetails);
+        $(H4tag).appendTo(newPtag);
+        brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
+
+        H4tag = $("<h5>");
+        $(H4tag).css("line-height", "1.0");
+        $(H4tag).css("margin", "0px");
+        $(H4tag).css("padding", "0px");
+        tripDetails = "movie ends: " + moment.unix(mfStack[i].finishTime_ts).format("h:mma");
+        $(H4tag).text(tripDetails);
+        $(H4tag).appendTo(newPtag);
+        brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
+        H4tag = $("<h5>");
+        $(H4tag).css("line-height", "1.0");
+        $(H4tag).css("margin", "0px");
+        $(H4tag).css("padding", "0px");
+        tripDetails = "back home at: " + moment.unix(mfStack[i].timeBack).format("h:mma");
+        $(H4tag).text(tripDetails);
+        $(H4tag).appendTo(newPtag);
+        brTag = $("<br/>");
+        $(brTag).appendTo(newPtag);
+
         $(H4tag).appendTo(newPtag);
         var brTag = $("<br/>");
         $(brTag).appendTo(newPtag);
@@ -1473,7 +1540,7 @@ var geoPushDefault = function () {
     theaterObj.searchLoc.lat = numeral(41.8583606).format("+0000.000000");
     theaterObj.searchLoc.long = numeral(-87.69337).format("+0000.000000");
     if (configData.dispRichOutput === true) {
-        $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+        //$("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
         $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
     } else {
         $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
@@ -1534,7 +1601,7 @@ var convertGeoToAddr = function () {
         if (configData.dispRichOutput != true) {
             $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
         } else {
-            $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+            //$("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
             $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
         };
         //turn off wait location
@@ -1583,7 +1650,7 @@ var checkAndConvertAddrToGeo = function () {
             if (configData.dispRichOutput != true) {
                 $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
             } else {
-                $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+                //$("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
                 $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
             };
             doneConvertAddrToGeo();
@@ -1604,7 +1671,7 @@ var checkAndConvertAddrToGeo = function () {
                 if (configData.dispRichOutput != true) {
                     $("#cityZipSearch").val(theaterObj.searchLoc.addrSearchStr);
                 } else {
-                    $("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
+                    //$("#GPScoord").text(numeral(theaterObj.searchLoc.lat).format("+0000.000000") + " , " + numeral(theaterObj.searchLoc.long).format("+0000.000000"));
                     $("#input-addr").val(theaterObj.searchLoc.addrSearchStr);
                 };
                 doneConvertAddrToGeo();
