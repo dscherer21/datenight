@@ -37,6 +37,10 @@ var displayMovies = function () {
 
 };
 
+$( function() {
+    $( "#modMap" ).draggable();
+  } );
+
 $(document).ready(function () {
     console.log("ready!");
     getLocation();
