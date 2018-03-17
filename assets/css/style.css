@@ -44,6 +44,10 @@ hr {
     opacity: 0;
 }
 
+footer {
+    font-size: 18px;
+}
+
 .navbar-default {
     background-color: rgba(66, 1, 13, 1);
     background-size: cover;
